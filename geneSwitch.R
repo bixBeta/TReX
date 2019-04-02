@@ -3,7 +3,7 @@
 suppressWarnings(library("dplyr"))
 
 names 	<- list.files(getwd(), pattern = ".rawCounts" )
-gff 	<- "/Users/fa286/bin/gff.Hash.Aegl5.0.txt"
+gff 	<- "/Users/fa286/bin/gff.Hash.Aegl5.0.txt" #hard path
 
 swapFunc <- function(gff,countFile,names){
 
