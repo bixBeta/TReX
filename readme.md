@@ -1,4 +1,4 @@
-processSAR.R usage -> Rscript processSAR.R<path/to/SAR/tables/>
+processSAR.R  -> Rscript processSAR.R <path/to/SAR/tables/> 
 
 trim2align.sh -> Current TRex workflow 
 
