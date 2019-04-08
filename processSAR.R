@@ -1,15 +1,16 @@
 #!/usr/bin/env Rscript
 
-arg <-  commandArgs(trailingOnly = T)
-rawCounts <- arg[1]
-#rawCounts <- "/1006.rawCounts/1006/tables"
+#args <-  commandArgs(trailingOnly = T)
+#rawCounts <- arg[1]
+#rawCounts <- "/1006.rawCounts/1006/tables/"
 library(dplyr)
 
 
-fileNames <- list.files( arg[1], pattern = ".complete")
-filePath <- paste0(arg[1], fileNames)
+fileNames <- list.files(paste0(getwd()), pattern = ".complete")
+filePath <- paste0(getwd(), "/", fileNames)
 
 # import SAR tool files as objects 
+
 
 for (i in 1:length(fileNames)) {
       
@@ -20,13 +21,13 @@ for (i in 1:length(fileNames)) {
 
 
 for (i in 1:length(objects(pattern = "vs"))) {
-
- z <- c("dispGeneEst","dispFit","dispMAP","dispersion","betaConv","maxCooks" )
- pattern <- as.data.frame(mget(ls(pattern = "vs")[1]), col.names = NULL)
- assign(paste0(strsplit(fileNames[i], "\\.")[[1]][1], ".rmLast6"),
-          value = select(pattern, -z),
-          envir = .GlobalEnv)
- 
+  
+  z <- c("dispGeneEst","dispFit","dispMAP","dispersion","betaConv","maxCooks" )
+  pattern <- as.data.frame(mget(strsplit(fileNames[i], "\\.")[[1]][1]), col.names = NULL)
+  assign(paste0(strsplit(fileNames[i], "\\.")[[1]][1], ".rmLast6"),
+         value = select(pattern, -z),
+         envir = .GlobalEnv)
+  
 }
 
 obj <- objects(pattern = ".rmLast6")
@@ -58,7 +59,6 @@ for (i in 2:length(obj2)){
 }
 
 write.table(new.data.frame, "final.txt", sep = "\t", quote = F, row.names = F)
-
 
 
 
