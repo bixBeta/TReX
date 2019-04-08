@@ -1,8 +1,5 @@
 #!/usr/bin/env Rscript
 
-#args <-  commandArgs(trailingOnly = T)
-#rawCounts <- arg[1]
-#rawCounts <- "/1006.rawCounts/1006/tables/"
 #fileNames <- list.files(paste0(getwd()), pattern = ".complete")
 #filePath <- paste0(getwd(), "/", fileNames)
 
