@@ -3,11 +3,17 @@
 #args <-  commandArgs(trailingOnly = T)
 #rawCounts <- arg[1]
 #rawCounts <- "/1006.rawCounts/1006/tables/"
+#fileNames <- list.files(paste0(getwd()), pattern = ".complete")
+#filePath <- paste0(getwd(), "/", fileNames)
+
+arg <-  commandArgs(trailingOnly = T)
+rawCounts <- arg[1]
+#rawCounts <- "/1006.rawCounts/1006/tables"
 library(dplyr)
 
 
-fileNames <- list.files(paste0(getwd()), pattern = ".complete")
-filePath <- paste0(getwd(), "/", fileNames)
+fileNames <- list.files( arg[1], pattern = ".complete")
+filePath <- paste0(arg[1], fileNames)
 
 # import SAR tool files as objects 
 
