@@ -57,14 +57,22 @@ for (i in 1:length(pattern2)) {
         value = cbind(as.data.frame(mget(pattern2)[i], col.names = NULL),Id), 
         envir = .GlobalEnv)
 
-  }
-
+ }
 
 for (i in 1:length(pattern2)) {
   
-  assign(paste0(pattern2[i], "join"), 
+  assign(paste0(pattern2[i], ".join"), 
          value = full_join(as.data.frame(mget(pattern2)[i], col.names = NULL), 
                            norm.Counts, by = "Id"), envir = .GlobalEnv )
   
-}
+ }
 
+pattern3 <- objects(pattern = ".join")
+
+for (i in 1:length(pattern3)) {
+  
+  assign(paste0(pattern3[i], ".final"), 
+         value = ((as.data.frame(mget(pattern3)[i], col.names = NULL)) %>%
+                          select(Id, matches("norm"), everything())), 
+         envir = .GlobalEnv )
+ }
