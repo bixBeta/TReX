@@ -106,5 +106,10 @@ for (i in 2:length(obj2)){
   
 }
 
+new.data.frame <- 
+  new.data.frame %>%
+  mutate_at(vars(matches("vs")), ~ round(.,3)) %>%
+  mutate_at(vars(matches("norm")), ~ round(.,0))
+
 write.table(new.data.frame, "final.txt", sep = "\t", quote = F, row.names = F)
 
