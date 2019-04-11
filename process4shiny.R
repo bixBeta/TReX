@@ -1,5 +1,7 @@
-library(DESeq2)
-library(dplyr)
+suppressPackageStartupMessages(library(DESeq2))
+suppressPackageStartupMessages(library(dplyr))
+# load("/Users/fa286/Documents/PROJECTS/1007/rawCounts/swapCounts/1007/1007.RData")
+
 ## -------------------------------------------------------------------------------------------------------------------
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = target,
@@ -12,20 +14,21 @@ dds <- DESeq(dds)
 ## -------------------------------------------------------------------------------------------------------------------
 # add .custom to all contrast objects 
 
-cHotvscCold.custom <- results(dds, contrast=c("group", "cHOT", "cCOLD"), alpha = 0.05)      
-pHotvspCold.custom <- results(dds, contrast=c("group", "pHOT", "pCOLD"), alpha = 0.05)
-cHotvspHot.custom <- results(dds, contrast=c("group", "cHOT", "pHOT"), alpha = 0.05)
-cColdvspCold.custom <- results(dds, contrast=c("group", "cCOLD", "pCOLD"), alpha = 0.05)
+cHot_vs_cCold.custom <- results(dds, contrast=c("group", "cHOT", "cCOLD"), alpha = 0.05)      
+pHot_vs_pCold.custom <- results(dds, contrast=c("group", "pHOT", "pCOLD"), alpha = 0.05)
+cHot_vs_pHot.custom <- results(dds, contrast=c("group", "cHOT", "pHOT"), alpha = 0.05)
+cCold_vs_pCold.custom <- results(dds, contrast=c("group", "cCOLD", "pCOLD"), alpha = 0.05)
 
 pattern1 <- objects(pattern = ".custom")
 
+sink(file = "Contrasts_Summary.log")
 for (i in 1:length(pattern1)) {
   
   print(paste0("Res Summary - ", pattern1[i], ":"))
   summary.DESeqResults(get(pattern1[i]))
   
 }
-
+sink()
 ## -------------------------------------------------------------------------------------------------------------------
 norm.Counts <- as.data.frame(counts(dds, normalized = T))
 
@@ -49,8 +52,10 @@ for (i in 1:length(pattern1)) {
 pattern2 <- objects(pattern = ".df")
 
 Id <- as.data.frame(row.names(norm.Counts))
+
 colnames(Id) <- "Id"
 
+# norm.counts$Id and row.names(*.df) must match 
 for (i in 1:length(pattern2)) {
   
   assign(x = pattern2[i],
@@ -101,7 +106,7 @@ new.data.frame <- as.data.frame(mget(obj2[1]),col.names = NULL)
 for (i in 2:length(obj2)){
   
   new.data.frame <- full_join(new.data.frame, 
-                              select(as.data.frame(mget(obj2[i]),col.names = NULL), Id, matches("vs")), 
+                              select(as.data.frame(mget(obj2[i]),col.names = NULL), Id, matches("_vs_")), 
                               by = "Id")
   
 }
@@ -112,4 +117,7 @@ new.data.frame <-
   mutate_at(vars(matches("norm")), ~ round(.,0))
 
 write.table(new.data.frame, "final.txt", sep = "\t", quote = F, row.names = F)
+
+
+
 
