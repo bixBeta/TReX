@@ -2,11 +2,18 @@
 
 #fileNames <- list.files(paste0(getwd()), pattern = ".complete")
 #filePath <- paste0(getwd(), "/", fileNames)
+library(progress)
+pb <- progress_bar$new(total = 100)
+
+
+for (i in 1:20) {
+  pb$tick()
+  Sys.sleep(1 / 10)
+}
 
 arg <-  commandArgs(trailingOnly = T)
-rawCounts <- arg[1]
-#rawCounts <- "/1006.rawCounts/1006/tables"
-library(dplyr)
+
+suppressPackageStartupMessages(library(dplyr))
 
 
 fileNames <- list.files( arg[1], pattern = ".complete")
@@ -22,6 +29,10 @@ for (i in 1:length(fileNames)) {
       envir = .GlobalEnv)
 }
 
+for (i in 1:30) {
+  pb$tick()
+  Sys.sleep(1 / 100)
+}
 
 for (i in 1:length(objects(pattern = "vs"))) {
   
@@ -31,6 +42,11 @@ for (i in 1:length(objects(pattern = "vs"))) {
          value = select(pattern, -z),
          envir = .GlobalEnv)
   
+}
+
+for (i in 1:30) {
+  pb$tick()
+  Sys.sleep(1 / 100)
 }
 
 obj <- objects(pattern = ".rmLast6")
@@ -64,4 +80,7 @@ for (i in 2:length(obj2)){
 write.table(new.data.frame, "final.txt", sep = "\t", quote = F, row.names = F)
 
 
-
+for (i in 1:20) {
+  pb$tick()
+  Sys.sleep(1 / 100)
+}
