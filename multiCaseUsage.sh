@@ -2,7 +2,7 @@
 
 # Note: 
 # This is just a template for genral use cases @TreX, it does not check for trueness of arguments. 
-# User can supply at most 2 non acceptable values at atleast $1 $2 or $3 to execute true arguments. 
+# User can supply at most 2 non acceptable values at $1 $2 or $3 to execute true arguments. 
 
 set -e
 
