@@ -15,6 +15,12 @@ arg <-  commandArgs(trailingOnly = T)
 
 suppressPackageStartupMessages(library(dplyr))
 
+# check for required argument
+if (length(arg)==0) {
+  print(" Usage = Rscript test.R < path to *_vs_* txt files + '/'> ")  
+  stop("Both arguments must be supplied!!! \n", call.=FALSE)
+  
+} 
 
 fileNames <- list.files( arg[1], pattern = ".complete")
 filePath <- paste0(arg[1], fileNames)
