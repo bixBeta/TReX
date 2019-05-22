@@ -43,24 +43,24 @@ trimSmall(){
 
 declare -A genomeDir
 
-genomeDir=( ["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/hg38.star" \
-			["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/mm10.star" \
-			["GRCh38"]="/workdir/genomes/Homo_sapiens/hg38/ENSEMBL/GRCh38.star" \
-			["GRCm38"]="/workdir/genomes/Mus_musculus/mm10/ENSEMBL/GRCm38.star" \
-			["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/genomeDir" \
-			["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/galgal5.star" \
-			["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.star"  )
+genomeDir=( 	["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/hg38.star" \
+		["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/mm10.star" \
+		["GRCh38"]="/workdir/genomes/Homo_sapiens/hg38/ENSEMBL/GRCh38.star" \
+		["GRCm38"]="/workdir/genomes/Mus_musculus/mm10/ENSEMBL/GRCm38.star" \
+		["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/genomeDir" \
+		["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/galgal5.star" \
+		["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.star"  )
 
 
 declare -A bed12
 
 bed12=( 	["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/genes.bed12" \
-			["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/BED12/mm10.ucsc.bed12" \
-			["GRCh38"]=" " \
-			["GRCm38"]=" " \
-			["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/Felis_catus.Felis_catus_9.0.95.bed12" \
-			["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/Gallus_gallus.Gallus_gallus-5.0.bed12" \
-			["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.EquCab3.0.96.bed12"  )
+		["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/BED12/mm10.ucsc.bed12" \
+		["GRCh38"]=" " \
+		["GRCm38"]=" " \
+		["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/Felis_catus.Felis_catus_9.0.95.bed12" \
+		["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/Gallus_gallus.Gallus_gallus-5.0.bed12" \
+		["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.EquCab3.0.96.bed12"  )
 
 
 
@@ -68,7 +68,7 @@ align(){
 
 	cd trimmed_fastqs
 
-		for i in *_trimmed.fq.gz
+	for i in *_trimmed.fq.gz
 
 	    do
 
@@ -122,12 +122,6 @@ align(){
 }
 
 
-
-
-
-
-
-
 while getopts "hp:t:g:s:" opt; do
   case ${opt} in
     h)  
@@ -154,7 +148,7 @@ while getopts "hp:t:g:s:" opt; do
 	       if [[ $T == yes ]]; then
 				trimSmall
 	       else
-	       		trim
+	       			trim
 	       fi
 
     ;;
@@ -213,9 +207,9 @@ while getopts "hp:t:g:s:" opt; do
 
     \? )
     	echo
-		echo 
-		echo 
-		usage
+	echo 
+	echo 
+	usage
 
      ;;
   esac
