@@ -44,23 +44,23 @@ trimSmall(){
 declare -A genomeDir
 
 genomeDir=( ["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/hg38.star" \
-			["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/mm10.star" \
-			["GRCh38"]="/workdir/genomes/Homo_sapiens/hg38/ENSEMBL/GRCh38.star" \
-			["GRCm38"]="/workdir/genomes/Mus_musculus/mm10/ENSEMBL/GRCm38.star" \
-			["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/genomeDir" \
-			["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/galgal5.star" \
-			["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.star"  )
+	["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/mm10.star" \
+	["GRCh38"]="/workdir/genomes/Homo_sapiens/hg38/ENSEMBL/GRCh38.star" \
+	["GRCm38"]="/workdir/genomes/Mus_musculus/mm10/ENSEMBL/GRCm38.star" \
+	["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/genomeDir" \
+	["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/galgal5.star" \
+	["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.star"  )
 
 
 declare -A bed12
 
-bed12=( 	["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/genes.bed12" \
-			["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/BED12/mm10.ucsc.bed12" \
-			["GRCh38"]=" " \
-			["GRCm38"]=" " \
-			["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/Felis_catus.Felis_catus_9.0.95.bed12" \
-			["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/Gallus_gallus.Gallus_gallus-5.0.bed12" \
-			["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.EquCab3.0.96.bed12"  )
+bed12=( ["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/genes.bed12" \
+	["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/BED12/mm10.ucsc.bed12" \
+	["GRCh38"]=" " \
+	["GRCm38"]=" " \
+	["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/Felis_catus.Felis_catus_9.0.95.bed12" \
+	["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/Gallus_gallus.Gallus_gallus-5.0.bed12" \
+	["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.EquCab3.0.96.bed12"  )
 
 
 
@@ -132,15 +132,15 @@ while getopts "hp:t:g:s:" opt; do
    		echo
    		echo
 
-   	;;
+    ;;
 
     p )
 		
 		PIN=$OPTARG
    		echo "Project Identifier = " $PIN  
-   	;;	
+    ;;	
 
-   	t ) 
+    t ) 
        
        T=$OPTARG
 
@@ -148,21 +148,21 @@ while getopts "hp:t:g:s:" opt; do
     
     g)
 
-		DIR=$OPTARG
+	DIR=$OPTARG
 			
-   	;;
+    ;;
 
-	s)
+     s)
 	
-		STRAND=$OPTARG
+	STRAND=$OPTARG
 
-   	;;
+     ;;
 
     \? )
     	echo
-		echo 
-		echo 
-		usage
+	echo 
+	echo 
+	usage
 
      ;;
   esac
@@ -250,11 +250,6 @@ fi
 #-------------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------------
 
-echo "Project Identifier Specified = " $PIN >> beta2.run.log
-echo "Reference Genome Specified   = " $DIR >> beta2.run.log
-echo "Trimming for smRNA seq       = " $T >> beta2.run.log
-echo "Strandedness specified 	   = " $STRAND >> beta2.run.log 	
-
 if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 	#statements
 	echo
@@ -262,5 +257,10 @@ if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 	usage
 	echo
 	echo
+else
+	echo "Project Identifier Specified = " $PIN >> beta2.run.log
+	echo "Reference Genome Specified   = " $DIR >> beta2.run.log
+	echo "Trimming for smRNA seq       = " $T >> beta2.run.log
+	echo "Strandedness specified 	   = " $STRAND >> beta2.run.log 	
 fi
 
