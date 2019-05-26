@@ -4,15 +4,15 @@ source ~/.bash_profile
 
 usage(){
 
-		echo "Usage: bash" $0 "[-h arg] [-p arg] [-t arg] [-g arg] [-s arg] "
-		echo
-		echo "---------------------------------------------------------------------------------------------------------------"
-		echo "[-h] --> Display Help"
-		echo "[-p] --> Project Identifier Number; Required first argument"
-		echo "[-t] --> Small RNA Trimming <yes, no>"
-		echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, cat, chicken, horse >"
-		echo "[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
-		echo "---------------------------------------------------------------------------------------------------------------"
+	echo "Usage: bash" $0 "[-h arg] [-p arg] [-t arg] [-g arg] [-s arg] "
+	echo
+	echo "---------------------------------------------------------------------------------------------------------------"
+	echo "[-h] --> Display Help"
+	echo "[-p] --> Project Identifier Number; Required first argument"
+	echo "[-t] --> Small RNA Trimming <yes, no>"
+	echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, cat, chicken, horse >"
+	echo "[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
+	echo "---------------------------------------------------------------------------------------------------------------"
 }
 
 
@@ -123,49 +123,51 @@ align(){
 
 
 while getopts "hp:t:g:s:" opt; do
-  case ${opt} in
-    h)  
-		echo
-		echo
-		echo
-   		usage
-   		echo
-   		echo
-
-    ;;
-
-    p )
-		
-		PIN=$OPTARG
-   		echo "Project Identifier = " $PIN  
-    ;;	
-
-    t ) 
-       
-       T=$OPTARG
-
-    ;;
-    
-    g)
-
-	DIR=$OPTARG
-			
-    ;;
-
-     s)
+	case ${opt} in
 	
-	STRAND=$OPTARG
+	h)  
+		echo
+		echo
+		echo
+		usage
+		echo
+		echo
 
-     ;;
+	;;
 
-    \? )
-    	echo
-	echo 
-	echo 
-	usage
+	p )
 
-     ;;
-  esac
+		PIN=$OPTARG
+		echo "Project Identifier = " $PIN  
+	;;	
+
+	t ) 
+
+		T=$OPTARG
+
+	;;
+
+	g)
+
+		DIR=$OPTARG
+
+	;;
+
+	s)
+
+		STRAND=$OPTARG
+
+	;;
+
+	\? )
+		echo
+		echo 
+		echo 
+		usage
+
+	;;
+	
+	esac
 
 done
 # shift $((OPTIND -1))
