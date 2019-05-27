@@ -68,7 +68,7 @@ align(){
 
 	cd trimmed_fastqs
 
-		for i in *_trimmed.fq.gz
+	for i in *_trimmed.fq.gz
 
 	    do
 
