@@ -8,7 +8,7 @@ usage(){
 	echo
 	echo "---------------------------------------------------------------------------------------------------------------"
 	echo "[-h] --> Display Help"
-	echo "[-p] --> Project Identifier Number; Required first argument"
+	echo "[-p] --> Project Identifier Number"
 	echo "[-t] --> Small RNA Trimming <yes, no>"
 	echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, cat, chicken, horse >"
 	echo "[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
