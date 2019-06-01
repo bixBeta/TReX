@@ -266,6 +266,6 @@ else
 	echo "Reference Genome Specified   = " $DIR >> beta2.run.log
 	echo "Trimming for smRNA seq       = " $T >> beta2.run.log
 	echo "Strandedness specified 	   = " $STRAND >> beta2.run.log 
-	echo --------------------------------------------------------------------------------------------------
+	echo -------------------------------------------------------------------------------------------------- >> beta2.run.log 
 fi
 
