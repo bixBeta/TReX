@@ -260,6 +260,7 @@ if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 	echo
 	echo
 else
+	echo `date -u` >> beta2.run.log
 	echo "Project Identifier Specified = " $PIN >> beta2.run.log
 	echo "Reference Genome Specified   = " $DIR >> beta2.run.log
 	echo "Trimming for smRNA seq       = " $T >> beta2.run.log
