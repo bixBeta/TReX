@@ -259,11 +259,13 @@ if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 	usage
 	echo
 	echo
-else
+else	
+	echo 
 	echo `date -u` >> beta2.run.log
 	echo "Project Identifier Specified = " $PIN >> beta2.run.log
 	echo "Reference Genome Specified   = " $DIR >> beta2.run.log
 	echo "Trimming for smRNA seq       = " $T >> beta2.run.log
-	echo "Strandedness specified 	   = " $STRAND >> beta2.run.log 	
+	echo "Strandedness specified 	   = " $STRAND >> beta2.run.log 
+	echo --------------------------------------------------------------------------------------------------
 fi
 
