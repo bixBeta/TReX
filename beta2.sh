@@ -104,7 +104,7 @@ align(){
 	cd STAR/STAR.BAMS
 		for i in *.bam 
 		do
-			samtools index -b $i
+			/programs/bin/samtools/samtools index -b $i
 		done
 	cd ..
 	echo
