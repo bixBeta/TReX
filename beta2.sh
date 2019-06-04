@@ -10,7 +10,7 @@ usage(){
 	echo "[-h] --> Display Help"
 	echo "[-p] --> Project Identifier Number"
 	echo "[-t] --> Small RNA Trimming <yes, no>"
-	echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, cat, chicken, horse >"
+	echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, cat, chicken, horse, ATCC_13047 >"
 	echo "[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
 	echo "---------------------------------------------------------------------------------------------------------------"
 }
@@ -44,23 +44,27 @@ trimSmall(){
 declare -A genomeDir
 
 genomeDir=( ["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/hg38.star" \
-	["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/mm10.star" \
-	["GRCh38"]="/workdir/genomes/Homo_sapiens/hg38/ENSEMBL/GRCh38.star" \
-	["GRCm38"]="/workdir/genomes/Mus_musculus/mm10/ENSEMBL/GRCm38.star" \
-	["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/genomeDir" \
-	["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/galgal5.star" \
-	["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.star"  )
+["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/mm10.star" \
+["GRCh38"]="/workdir/genomes/Homo_sapiens/hg38/ENSEMBL/GRCh38.star" \
+["GRCm38"]="/workdir/genomes/Mus_musculus/mm10/ENSEMBL/GRCm38.star" \
+["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/genomeDir" \
+["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/galgal5.star" \
+["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.star" \
+["ATCC_13047"]="/workdir/genomes/Enterobacter_cloacae/ATCC_13047/ATCC_13047.star" )
 
 
 declare -A bed12
 
-bed12=( ["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/genes.bed12" \
-	["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/BED12/mm10.ucsc.bed12" \
-	["GRCh38"]=" " \
-	["GRCm38"]=" " \
-	["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/Felis_catus.Felis_catus_9.0.95.bed12" \
-	["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/Gallus_gallus.Gallus_gallus-5.0.bed12" \
-	["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.EquCab3.0.96.bed12"  )
+bed12=(	["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/genes.bed12" \
+["mm10"]="/workdir/genomes/Mus_musculus/mm10/UCSC/BED12/mm10.ucsc.bed12" \
+["GRCh38"]="/workdir/genomes/Homo_sapiens/hg38/ENSEMBL/Homo_sapiens.GRCh38.bed12" \
+["GRCm38"]="/workdir/genomes/Mus_musculus/mm10/ENSEMBL/Mus_musculus.GRCm38.bed12" \
+["cat"]="/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/Felis_catus.Felis_catus_9.0.95.bed12" \
+["chicken"]="/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/Gallus_gallus.Gallus_gallus-5.0.bed12" \
+["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.EquCab3.0.96.bed12" \
+["ATCC_13047"]="/workdir/genomes/Enterobacter_cloacae/ATCC_13047/GCF_000025565.1_ASM2556v1_genomic.bed12"  )
+
+
 
 
 
@@ -261,11 +265,11 @@ if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 	echo
 else	
 	echo 
-	echo `date -u` >> beta2.run.log
-	echo "Project Identifier Specified = " $PIN >> beta2.run.log
-	echo "Reference Genome Specified   = " $DIR >> beta2.run.log
-	echo "Trimming for smRNA seq       = " $T >> beta2.run.log
-	echo "Strandedness specified 	   = " $STRAND >> beta2.run.log 
+	echo `date -u` >> beta3.run.log
+	echo "Project Identifier Specified = " $PIN >> beta3.run.log
+	echo "Reference Genome Specified   = " $DIR >> beta3.run.log
+	echo "Trimming for smRNA seq       = " $T >> beta3.run.log
+	echo "Strandedness specified 	   = " $STRAND >> beta3.run.log 
 	echo -------------------------------------------------------------------------------------------------- >> beta2.run.log 
 fi
 
