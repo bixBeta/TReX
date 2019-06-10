@@ -265,11 +265,11 @@ if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 	echo
 else	
 	echo 
-	echo `date -u` >> beta3.run.log
-	echo "Project Identifier Specified = " $PIN >> beta3.run.log
-	echo "Reference Genome Specified   = " $DIR >> beta3.run.log
-	echo "Trimming for smRNA seq       = " $T >> beta3.run.log
-	echo "Strandedness specified 	   = " $STRAND >> beta3.run.log 
+	echo `date -u` >> beta2.run.log
+	echo "Project Identifier Specified = " $PIN >> beta2.run.log
+	echo "Reference Genome Specified   = " $DIR >> beta2.run.log
+	echo "Trimming for smRNA seq       = " $T >> beta2.run.log
+	echo "Strandedness specified 	   = " $STRAND >> beta2.run.log 
 	echo -------------------------------------------------------------------------------------------------- >> beta2.run.log 
 fi
 
