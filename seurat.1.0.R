@@ -47,3 +47,4 @@ localMeta <- left_join(x = pbmc@meta.data, y = batchInfo, by = c("orig.ident" = 
 pbmc <- AddMetaData(object = pbmc, metadata = localMeta$pool, col.name = "pool")
 pbmc <- AddMetaData(object = pbmc, metadata = localMeta$batch, col.name = "batch")
 
+save.image("/local/workdir/singleCellData/R_session_for_SEURAT/filter-1-merged-pbmc-all-pheno-attached-preNormalization.RData")
