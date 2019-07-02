@@ -20,6 +20,7 @@ trimSmall(){
 		mkdir TrimQC_stats fastQC trimmed_fastqs
 		for i in fastqs/*.gz
 		do
+			TRIM="/home/fa286/bin/TrimGalore-0.6.0/trim_galore"
 			$TRIM --nextseq 20 --gzip --length 10  --fastqc --fastqc_args "-t 4 --outdir ./fastQC" $i
 		done
 		mv *_trimming_report.txt TrimQC_stats
@@ -35,6 +36,7 @@ trimHiSeq(){
 		mkdir TrimQC_stats fastQC trimmed_fastqs
 		for i in fastqs/*.gz
 		do
+			TRIM="/home/fa286/bin/TrimGalore-0.6.0/trim_galore"
 			$TRIM -q 20 --gzip --length 10  --fastqc --fastqc_args "-t 4 --outdir ./fastQC" $i
 		done
 		mv *_trimming_report.txt TrimQC_stats
