@@ -6,7 +6,7 @@ geneExpression <- function(gene){
   jnd <- left_join(myMeta, query, by = "UMI")
   jnd <- jnd %>% 
     group_by(Phenotype, CPET.Day) %>%
-    summarise_each(funs = (mean), !!ss)
+    summarise_each(funs = (mean), !!gene)
   print(jnd)
 }
 geneExpression("GRASP")
