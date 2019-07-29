@@ -24,9 +24,6 @@ trimSmall(){
 		done
 		mv *_trimming_report.txt TrimQC_stats
 		mv *trimmed.fq.gz trimmed_fastqs
-    cd trimmed_fastqs
-    gunzip *
-    cd ..
 
 }
 
@@ -39,9 +36,6 @@ trimHiSeq(){
 		done
 		mv *_trimming_report.txt TrimQC_stats
 		mv *trimmed.fq.gz trimmed_fastqs
-    cd trimmed_fastqs
-    gunzip *
-    cd ..
 
 }
 
