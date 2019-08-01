@@ -1,6 +1,6 @@
 processSAR.R  -> Rscript processSAR.R <path/to/SAR/tables/> 
 
-beta3.sh -> Current TREx workflow 
+beta4.sh -> Current TREX workflow 
 
 smRNA.beta2.sh -> Current TREx workflow for smRNA 
 
