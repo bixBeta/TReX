@@ -408,7 +408,7 @@ else
 	echo "Trimming for smRNA seq       = " $T >> beta4.run.log
 	echo "SE or PE                     = " $RUN >> beta4.run.log
 	echo "Strandedness specified       = " $STRAND >> beta4.run.log
-  echo "GeneBody Coverage            = " $GBCOV >> beta4.run.log
+  	echo "GeneBody Coverage            = " $GBCOV >> beta4.run.log
 	echo >> beta4.run.log
 
 	echo "ENV INFO: " >> beta4.run.log
