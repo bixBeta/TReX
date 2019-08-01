@@ -402,7 +402,7 @@ if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 
 else
 	echo >> beta4.run.log
-	echo `date -u` >> beta4.run.log
+	echo `date` >> beta4.run.log
 	echo "Project Identifier Specified = " $PIN >> beta4.run.log
 	echo "Reference Genome Specified   = " $DIR >> beta4.run.log
 	echo "Trimming for smRNA seq       = " $T >> beta4.run.log
