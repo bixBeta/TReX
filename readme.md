@@ -1,7 +1,7 @@
 beta4.sh  
 
 ```
-Usage: bash beta4.sh [-h arg] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] 
+Usage: bash beta4.sh [-h] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] 
 ---------------------------------------------------------------------------------------------------------------
 [-h] --> Display Help
 [-p] --> Project Identifier Number
