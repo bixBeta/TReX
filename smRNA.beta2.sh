@@ -24,7 +24,6 @@ trimSmall(){
 		done
 		mv *_trimming_report.txt TrimQC_stats
 		mv *trimmed.fq.gz trimmed_fastqs
-
 }
 
 trimHiSeq(){
@@ -36,7 +35,6 @@ trimHiSeq(){
 		done
 		mv *_trimming_report.txt TrimQC_stats
 		mv *trimmed.fq.gz trimmed_fastqs
-
 }
 
 fastq2fasta(){
@@ -63,8 +61,6 @@ config(){
     done
 
   paste f1 f2 > config.txt
-
-  CONFIG="config.txt"
   cd ..
 
 }
@@ -72,6 +68,7 @@ config(){
 mapper(){
   echo "mapper"
   cd trimmed_fastqs
+  CONFIG="config.txt"
   DATE=`date +"%m_%d_%H-%M"`
   mapper.pl $CONFIG -d -c -m -s ${PIN}_${DATE}.collapsed.fa
   cd ..
@@ -79,10 +76,7 @@ mapper(){
 
 quantHuman(){
   cd trimmed_fastqs
-  
-  #/workdir/RSC/referenceFiles/miRBase/v22_1/
- 
-  quantifier.pl -p /workdir/genomes/miRBase/v22_1/hairpin.fa \
+  quantifier.pl -p /workdir/RSC/referenceFiles/miRBase/v22_1/hairpin.fa \
   -m /workdir/RSC/referenceFiles/miRBase/v22_1/mature.fa \
   -t hsa -y ${PIN}_${DATE} -r ${PIN}_${DATE}.collapsed.fa -W -d
   cd ..
@@ -99,7 +93,7 @@ cleanUp(){
 
   mkdir mirDeep2
   mv expression_analyses expression*.html miRNAs_expressed_all_samples*.csv mirDeep2
-
+  mv mirDeep2 ..
 }
 
 # PIN="1058"
