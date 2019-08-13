@@ -79,7 +79,10 @@ mapper(){
 
 quantHuman(){
   cd trimmed_fastqs
-  quantifier.pl -p /workdir/RSC/referenceFiles/miRBase/v22_1/hairpin.fa \
+  
+  #/workdir/RSC/referenceFiles/miRBase/v22_1/
+ 
+  quantifier.pl -p /workdir/genomes/miRBase/v22_1/hairpin.fa \
   -m /workdir/RSC/referenceFiles/miRBase/v22_1/mature.fa \
   -t hsa -y ${PIN}_${DATE} -r ${PIN}_${DATE}.collapsed.fa -W -d
   cd ..
