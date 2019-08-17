@@ -89,13 +89,13 @@ pComp.df <- data.frame(PC1, PC2 , PC3)
 rownames(pComp.df) <- phenoData$label
 pComp.df <- rownames_to_column(pComp.df, var = "samples")
 pComp.df <- left_join(pComp.df, phenoData, by = c("samples" = "label"))
-pComp.df <- pComp.df %>% mutate_at(vars(matches("pca")), ~ ./1000000)
+pComp.df <- pComp.df %>% mutate_at(vars(matches("pca")), ~ ./100000)
 
 
 
 hc <- hclust(dist(t(assay(vsd))), method="ward.D")
-plot(hc, hang=-1, ylab="Height", las=2, 
-     xlab="Method: Euclidean distance - Ward criterion", main="Cluster dendrogram")
+# plot(hc, hang=-1, ylab="Height", las=2, 
+#     xlab="Method: Euclidean distance - Ward criterion", main="Cluster dendrogram")
 
 
 
