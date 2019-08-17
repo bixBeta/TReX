@@ -1,6 +1,7 @@
 library(plotly)
 library(shiny)
 
+source("global.R")
 ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
@@ -9,12 +10,22 @@ ui <- fluidPage(
       # verbatimTextOutput("click"),width = 3,
       
       selectInput(inputId = "choice", label = "Select Groupings", 
-                  choices = colnames(pComp.df), selected = "group"), width = 2
+                  choices = colnames(pComp.df), selected = "group"), width = 2),
       
-    ),
-    mainPanel(plotlyOutput("plot"), width = 4)
+      mainPanel(
+        tabsetPanel(
+          id = 'TABS',
+          tabPanel("plotPCA", plotlyOutput("plot"), width = 4),
+          
+          tabPanel("Clust", plotOutput(outputId = "clust", width = 1080, height = 1080))
+        )
+        
+    #     ),
+    # 
+    # 
+    # mainPanel(plotlyOutput("plot"), width = 4)
     
-  ))
+  )))
 
 
 server <- function(input, output, session) {
@@ -26,10 +37,12 @@ server <- function(input, output, session) {
              scene = list(xaxis = list(title = 'PC1'),
                           yaxis = list(title = 'PC2'),
                           zaxis = list(title = 'PC3')))
-    
-    
-    
   })
+  
+  output$clust <- renderPlot(plot(hc, hang=-1, ylab="Height", las=2, 
+                                  xlab="Method: Euclidean distance - Ward criterion", 
+                                  main="Cluster dendrogram")
+  )
   
   # output$hover <- renderPrint({
   #   d <- event_data("plotly_hover")
