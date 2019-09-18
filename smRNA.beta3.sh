@@ -10,7 +10,7 @@ usage(){
 	echo "[-h] --> Display Help "
 	echo "[-p] --> Project Identifier Number "
 	echo "[-t] --> NextSeq run < yes, no, na > "
-  echo "[-g] --> Mapper Genome < hsa, mmu, cel > "
+  	echo "[-g] --> Mapper Genome < hsa, mmu, cel > "
 	echo "---------------------------------------------------------------------------------------------------------------"
 
 }
@@ -150,11 +150,11 @@ while getopts "hp:t:g:" opt; do
 	;;
 
 
-  g )
+ 	 g )
 
-    G=$OPTARG
+    	G=$OPTARG
 
-  ;;
+  	;;
 
 	\? )
 		echo
