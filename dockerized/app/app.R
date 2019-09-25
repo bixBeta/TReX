@@ -42,10 +42,7 @@ ui <- shinyUI(navbarPage(title = "RNA-seq: Unsupervised Exploration",
                                   sidebarLayout(
                                     sidebarPanel(
                                       uiOutput("groups2"),width = 4,
-                                      plotOutput(outputId = "scree",
-                                        screeplot(pca, npcs = ncol(pca$x), 
-                                                  type = "lines", 
-                                                  main = "Percent Variance Explained by PC's"))), 
+                                      plotOutput(outputId = "scree")), 
                                     
                                     mainPanel(
                                       plotlyOutput("plot2"))
@@ -227,9 +224,9 @@ server <- shinyServer(function(input, output, session) {
     
     output$scree <- renderPlot({
       screeplot(pca, npcs = ncol(pca$x), type = "lines", main = "Var Explained by PC's")
-      
+
     })
-    
+
     
     for (i in 18:20) {
       progress$set(value = i)
