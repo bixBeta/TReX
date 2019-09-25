@@ -10,7 +10,7 @@ options(shiny.maxRequestSize = 100*1024^2)
 
 
 # Define UI
-ui <- shinyUI(navbarPage(title = "RNA-seq: Unsupervised Discovery",
+ui <- shinyUI(navbarPage(title = "RNA-seq: Unsupervised Exploration",
                          
                          tabPanel(title = "Main",
                                   sidebarLayout(
@@ -35,6 +35,20 @@ ui <- shinyUI(navbarPage(title = "RNA-seq: Unsupervised Discovery",
                                     
                                     mainPanel(
                                       plotlyOutput("plot"))
+                                  )
+                         ),
+                         
+                         tabPanel("2D-PCA", 
+                                  sidebarLayout(
+                                    sidebarPanel(
+                                      uiOutput("groups2"),width = 4,
+                                      plotOutput(outputId = "scree",
+                                        screeplot(pca, npcs = ncol(pca$x), 
+                                                  type = "lines", 
+                                                  main = "Percent Variance Explained by PC's"))), 
+                                    
+                                    mainPanel(
+                                      plotlyOutput("plot2"))
                                   )
                          )
                          
@@ -172,6 +186,17 @@ server <- shinyServer(function(input, output, session) {
       
     })
     
+    output$groups2 <- renderUI({
+      #      if(is.null(colnames(pComp.df))){return()}
+      
+      tagList(
+        selectInput(inputId = "choice2", label = "Select Groupings",
+                    choices = colnames(pComp.df), selected = "group")
+      )
+      
+      
+      
+    })
     
     output$plot <- renderPlotly({
       
@@ -184,6 +209,25 @@ server <- shinyServer(function(input, output, session) {
                scene = list(xaxis = list(title = 'PC1'),
                             yaxis = list(title = 'PC2'),
                             zaxis = list(title = 'PC3')))
+    })
+    
+    
+    output$plot2 <- renderPlotly({
+      
+      if(is.null(input$choice2)){return()}
+      plot_ly(data = pComp.df, x = ~ pca.x...1., y = ~ pca.x...2., 
+              color = ~ get(input$choice2),
+              marker = list(size = 8,
+                            line = list(color = ~ group, width = 1))) %>%
+        layout(autosize = F, width = 800, height = 800,
+               xaxis = list(title = 'PC1'),
+               yaxis = list(title = 'PC2'))
+      
+    })
+    
+    output$scree <- renderPlot({
+      screeplot(pca, npcs = ncol(pca$x), type = "lines", main = "Var Explained by PC's")
+      
     })
     
     
@@ -210,4 +254,3 @@ server <- shinyServer(function(input, output, session) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
