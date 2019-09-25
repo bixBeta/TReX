@@ -42,7 +42,8 @@ ui <- shinyUI(navbarPage(title = "RNA-seq: Unsupervised Exploration",
                                   sidebarLayout(
                                     sidebarPanel(
                                       uiOutput("groups2"),width = 4,
-                                      plotOutput(outputId = "scree")), 
+                                      plotOutput(outputId = "scree"),
+                                      verbatimTextOutput("prop")), 
                                     
                                     mainPanel(
                                       plotlyOutput("plot2"))
@@ -83,6 +84,9 @@ server <- shinyServer(function(input, output, session) {
     output$mytable1 <- DT::renderDataTable({
       DT::datatable(target2)
     })
+    
+    output$prop <- renderPrint(summary(pca))
+
     
     # output$groups <- renderUI({
     #   tagList(
