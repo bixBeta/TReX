@@ -82,14 +82,14 @@ txdb <- makeTxDbFromGFF(gtf.path,
 #-----------------------------------------------------------------------------------------
 # import peak files as list
 
-files <- list.files(path = "peaks.OUT", pattern = ".narrowPeak$", full.names = T)
+# files <- list.files(path = "peaks.OUT", pattern = ".narrowPeak$", full.names = T)
 
-files <- as.list(files[1:length(files)])
+# files <- as.list(files[1:length(files)])
 
-for (i in 1:length(files)) {
-  names(files[[i]]) <- gsub(pattern = ".narrowPeak", 
-                            replacement = "", basename(files[[i]]))
-}
+# for (i in 1:length(files)) {
+# names(files[[i]]) <- gsub(pattern = ".narrowPeak", 
+#                            replacement = "", basename(files[[i]]))
+# }
 
 #-----------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------
