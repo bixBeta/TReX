@@ -3,6 +3,6 @@
 ### Folder Layout
     .
     ├── *.CLEAN.bam                     # clean bams
-    ├── *.bam.bai                       # samtools index *.bam
+    ├── *.bam.bai                       # `samtools index` *.CLEAN.bam
     ├── peaks.OUT                       # peak output (`macs2`)
     └── README.md
