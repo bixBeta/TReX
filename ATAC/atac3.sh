@@ -72,14 +72,14 @@ alignPE(){
                 | samtools view -@ 24 -b -h -F 0x0100 -O BAM -o ${iSUB}.bam
         done
 
-				mkdir primary-BAMS
-				mv *.bam primary-BAMS
-				mv primary-BAMS ..
-				cd ..
+	mkdir primary-BAMS
+	mv *.bam primary-BAMS
+	mv primary-BAMS ..
+	cd ..
 }
 
 sort(){
-				cd primary-BAMS
+		cd primary-BAMS
 	        for i in *.bam
 	        do
 	        samtools sort $i > `echo  $i | cut -d "." -f1`.sorted.bam
@@ -90,16 +90,16 @@ sort(){
 	        	samtools index $i
 	        done
 
-					# alignment stats etc. on raw bams
-					for i in *.sorted.bam
-					do
-						iSUB=`echo $i | cut -d "." -f1`
-						samtools flagstat $i > ${iSUB}.primary.flagstat
-						samtools idxstats $i > ${iSUB}.primary.idxstats
-					done
+		# alignment stats etc. on raw bams
+		for i in *.sorted.bam
+		do
+			iSUB=`echo $i | cut -d "." -f1`
+			samtools flagstat $i > ${iSUB}.primary.flagstat
+			samtools idxstats $i > ${iSUB}.primary.idxstats
+		done
 
-				cd ..
-				pwd
+		cd ..
+		pwd
 }
 
 
@@ -107,15 +107,15 @@ sort(){
 
 
 rmMT(){
-				cd primary-BAMS
-				for i in *.sorted.bam
-				do
+		cd primary-BAMS
+		for i in *.sorted.bam
+		do
 
-					iSUB=`echo $i | cut -d "." -f1`
-					samtools idxstats $i | cut -f1 | grep -v MT | xargs samtools view -b $i > ${iSUB}.noMT.bam
+		iSUB=`echo $i | cut -d "." -f1`
+		samtools idxstats $i | cut -f1 | grep -v MT | xargs samtools view -b $i > ${iSUB}.noMT.bam
 
-				done
-				cd ..
+		done
+		cd ..
 }
 
 markDups(){
@@ -136,14 +136,14 @@ markDups(){
 }
 
 cleanBAM(){
-				# alignment stats etc. on dupMarked no MT bams
-				for i in *.dupMarked.noMT.bam
-				do
-					iSUB=`echo $i | cut -d "." -f1`
-					samtools index $i
-					samtools flagstat $i > ${iSUB}.secondary.flagstat
-					samtools idxstats $i > ${iSUB}.secondary.idxstats
-				done
+	# alignment stats etc. on dupMarked no MT bams
+	for i in *.dupMarked.noMT.bam
+	do
+		iSUB=`echo $i | cut -d "." -f1`
+		samtools index $i
+		samtools flagstat $i > ${iSUB}.secondary.flagstat
+		samtools idxstats $i > ${iSUB}.secondary.idxstats
+	done
 
         for i in *.dupMarked.noMT.bam
         do
@@ -210,43 +210,39 @@ if [[ -z "${PIN+x}" ]]; then
 fi
 
 # PARAMETER CHECKS
-					#-------------------------------------------------------------------------------------------------------------
-					#-------------------------------------------------------------------------------------------------------------
-					## check if trimming parameter exists
+	#-------------------------------------------------------------------------------------------------------------
+	#-------------------------------------------------------------------------------------------------------------
+	## check if trimming parameter exists
 
-					if [[ ! -z "${T+x}" ]]; then
+	if [[ ! -z "${T+x}" ]]; then
 
-						if [[ $T == yes ]]; then
-							trimPE
-						else
-							echo "-t option only accepts yes as an argument"
-							exit 1
-						fi
-					fi
+		if [[ $T == yes ]]; then
+			trimPE
+		else
+			echo "-t option only accepts yes as an argument"
+			exit 1
+		fi
+	fi
 
-					#-------------------------------------------------------------------------------------------------------------
-					#-------------------------------------------------------------------------------------------------------------
-					## check if genomeDir provided
+	#-------------------------------------------------------------------------------------------------------------
+	#-------------------------------------------------------------------------------------------------------------
+	## check if genomeDir provided
 
-					if [[ ! -z "${DIR+x}" ]]; then
-						if [ ${genomeDir[${DIR}]+_} ]; then
-							echo Reference genome selected = $DIR
-							echo
-							#alignPE
-							#sort
-							rmMT
-							#markDups
-							#cleanBAM
-						else
-							echo "The reference genome provided '"$DIR"' is not available"
-							exit 1
+	if [[ ! -z "${DIR+x}" ]]; then
+		if [ ${genomeDir[${DIR}]+_} ]; then
+			echo Reference genome selected = $DIR
+			echo
+			#alignPE
+			#sort
+			rmMT
+			#markDups
+			#cleanBAM
+		else
+			echo "The reference genome provided '"$DIR"' is not available"
+			exit 1
 
-						fi
-					fi
-
-
-
-
+		fi
+	fi
 
 
 #-------------------------------------------------------------------------------------------------------------
