@@ -36,6 +36,16 @@ Usage: bash 3.1.sh [-h arg] [-p arg] [-t arg] [-g arg]
 [-g] --> Reference Genome <mm10 or hg38>
 ---------------------------------------------------------------------------------------------------------------
 ``` 
+```Rscript atacQC.R < human, mouse  or 'path to gtf annotation' >```
+
+> Dir Structure
+
+    .
+    ├── *.CLEAN.bam                     # clean bams
+    ├── *.bam.bai                       # samtools index *.CLEAN.bam
+    ├── peaks.OUT                       # macs2 peak files 
+    └── README.md
+
 
 #### R script to generate mega DE-reults table
 processSAR.R  
