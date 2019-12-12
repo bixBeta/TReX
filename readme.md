@@ -30,5 +30,5 @@ Usage: bash smRNA.beta3.sh [-h arg] [-p arg] [-t arg] [-g arg]
 processSAR.R  
 `Usage: Rscript processSAR.R <path/to/SAR/tables/>`
 
-geneSwitch.R 
+geneSwitch.R <br>
 `For gff annotations use geneSwitch.R to replace the gene0, gene1, gene2 ... etc. naming schema with appropriate gene names`
