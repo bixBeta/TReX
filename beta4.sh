@@ -1,5 +1,11 @@
 #!/bin/sh
 
+#SBATCH -J RNAseq
+#SBATCH -o %x.out
+#SBATCH -e %x.err
+#SBATCH -n 12
+#SBATCH --mem-per-cpu=18000
+
 source ~/.bash_profile
 
 usage(){
