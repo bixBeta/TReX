@@ -13,7 +13,6 @@ Usage: bash beta4.sh [-h] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg]
 ---------------------------------------------------------------------------------------------------------------
 ```
 ### smRNA-seq Workflow
-smRNA.beta3.sh 
 
 ```
 Usage: bash smRNA.beta3.sh [-h arg] [-p arg] [-t arg] [-g arg]
