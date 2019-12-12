@@ -24,7 +24,18 @@ Usage: bash smRNA.beta3.sh [-h arg] [-p arg] [-t arg] [-g arg]
 [-g] --> Mapper Genome < hsa, mmu, cel > 
 ---------------------------------------------------------------------------------------------------------------
 ```
+### ATAC-seq Workflow
 
+```
+Usage: bash 3.1.sh [-h arg] [-p arg] [-t arg] [-g arg]
+
+---------------------------------------------------------------------------------------------------------------
+[-h] --> Display Help
+[-p] --> Project Identifier Number
+[-t] --> Trimming <yes>; only use it if trimming is required
+[-g] --> Reference Genome <mm10 or hg38>
+---------------------------------------------------------------------------------------------------------------
+``` 
 
 #### R script to generate mega DE-reults table
 processSAR.R  
