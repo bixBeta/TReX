@@ -19,6 +19,7 @@ usage(){
 	echo "[-p] --> Project Identifier Number"
 	echo "[-t] --> Trimming <yes>; only use it if trimming is required"
 	echo "[-g] --> Reference Genome <mm10 or hg38>"
+	echo "[-q] --> Execute atacQC.R script <yes>"
 	echo "---------------------------------------------------------------------------------------------------------------"
 }
 
