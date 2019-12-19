@@ -12,7 +12,7 @@ usage(){
 	echo
 	echo
 
-	echo "Usage: bash" $0 "[-h arg] [-p arg] [-t arg] [-g arg]"
+	echo "Usage: bash" $0 "[-h arg] [-p arg] [-t arg] [-g arg] [-q arg]"
 	echo
 	echo "---------------------------------------------------------------------------------------------------------------"
 	echo "[-h] --> Display Help"
