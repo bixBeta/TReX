@@ -34,6 +34,7 @@ Usage: bash 3.3.sh [-h arg] [-p arg] [-t arg] [-g arg]
 [-p] --> Project Identifier Number
 [-t] --> Trimming <yes>; only use it if trimming is required
 [-g] --> Reference Genome <mm10 or hg38>
+[-q] --> Execute atacQC.R script <yes>
 --------------------------------------------------------------------------------------
 ``` 
 > QC ```Rscript atacQC.R < human, mouse  or 'path to gtf annotation' >```
