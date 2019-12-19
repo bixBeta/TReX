@@ -27,7 +27,7 @@ Usage: bash smRNA.beta3.sh [-h arg] [-p arg] [-t arg] [-g arg]
 ### ATAC-seq Workflow
 
 ```
-Usage: bash 3.1.sh [-h arg] [-p arg] [-t arg] [-g arg]
+Usage: bash 3.3.sh [-h arg] [-p arg] [-t arg] [-g arg]
 
 --------------------------------------------------------------------------------------
 [-h] --> Display Help
