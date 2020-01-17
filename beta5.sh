@@ -177,23 +177,23 @@ se_split(){
 
         done
 
-				source activate RSC
-				multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
-				mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
-				mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
-				cd STAR.SPLIT.Unmapped
-					for i in *mate*
-						do
-							mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
-						done
-				cd ..
-				mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
-				mv *.bam STAR.SPLIT.BAMS
-				mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
-				mkdir STAR.SPLIT
-				mv STAR.* *.html STAR.SPLIT
-				mv STAR.SPLIT ..
-				cd ..
+	source activate RSC
+	multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
+	mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
+	mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
+	cd STAR.SPLIT.Unmapped
+		for i in *mate*
+			do
+				mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
+			done
+	cd ..
+	mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
+	mv *.bam STAR.SPLIT.BAMS
+	mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
+	mkdir STAR.SPLIT
+	mv STAR.* *.html STAR.SPLIT
+	mv STAR.SPLIT ..
+	cd ..
 
 }
 
@@ -291,23 +291,23 @@ pe_split(){
 
           done
 
-					source activate RSC
-					multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
-					mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
-					mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
-					cd STAR.SPLIT.Unmapped
-						for i in *mate*
-							do
-								mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
-							done
-					cd ..							
-					mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
-					mv *.bam STAR.SPLIT.BAMS
-					mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
-					mkdir STAR.SPLIT
-					mv STAR.* *.html STAR.SPLIT
-					mv STAR.SPLIT ..
-					cd ..
+	source activate RSC
+	multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
+	mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
+	mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
+	cd STAR.SPLIT.Unmapped
+		for i in *mate*
+			do
+				mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
+			done
+	cd ..							
+	mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
+	mv *.bam STAR.SPLIT.BAMS
+	mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
+	mkdir STAR.SPLIT
+	mv STAR.* *.html STAR.SPLIT
+	mv STAR.SPLIT ..
+	cd ..
 }
 
 
@@ -526,7 +526,7 @@ else
 	echo "Trimming for smRNA seq       = " $T >> beta5.run.log
 	echo "SE or PE                     = " $RUN >> beta5.run.log
 	echo "Strandedness specified       = " $STRAND >> beta5.run.log
-    echo "GeneBody Coverage            = " $GBCOV >> beta5.run.log
+    	echo "GeneBody Coverage            = " $GBCOV >> beta5.run.log
 	echo >> beta5.run.log
 
 	echo "ENV INFO: " >> beta5.run.log
