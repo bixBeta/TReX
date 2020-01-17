@@ -18,7 +18,7 @@ usage(){
 	echo "[-p] --> Project Identifier Number"
 	echo "[-t] --> Small RNA Trimming <yes, no or paired>"
 	echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, rat, cat, chicken, horse, ATCC_13047, grape, ercc, ehv8 , erdman >"
-	echo "[-r] --> <SE> or <PE> "
+	echo "[-r] --> <SE> <SES> <PE> or <PES> "
 	echo "[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
 	echo "[-c] --> GeneBody Coverage < yes, no > "
 	echo "---------------------------------------------------------------------------------------------------------------------------"
@@ -152,6 +152,51 @@ align(){
 
 }
 
+se_split(){
+
+        cd trimmed_fastqs
+
+        for i in *_trimmed.fq.gz
+
+        do
+
+          iSUB=`echo $i | cut -d '_' -f5`
+
+          STAR \
+          --runThreadN 12 \
+          --genomeDir ${genomeDir[${DIR}]} \
+          --readFilesIn $i \
+          --readFilesCommand gunzip -c \
+          --outSAMstrandField intronMotif \
+          --outFilterIntronMotifs RemoveNoncanonical \
+          --outReadsUnmapped Fastx \
+          --outSAMtype BAM SortedByCoordinate \
+          --outFileNamePrefix $iSUB. \
+          --limitBAMsortRAM 61675612266 \
+          --quantMode GeneCounts
+
+        done
+
+				source activate RSC
+				multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
+				mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
+				mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
+				cd STAR.SPLIT.Unmapped
+					for i in *mate*
+						do
+							mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
+						done
+				cd ..
+				mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
+				mv *.bam STAR.SPLIT.BAMS
+				mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
+				mkdir STAR.SPLIT
+				mv STAR.* *.html STAR.SPLIT
+				mv STAR.SPLIT ..
+				cd ..
+
+}
+
 
 
 alignPE(){
@@ -216,6 +261,56 @@ alignPE(){
 
 }
 
+pe_split(){
+
+          cd trimmed_fastqs
+          ls -1 *_R1_val_1.fq.gz > .trR1
+          ls -1 *_R2_val_2.fq.gz > .trR2
+          paste -d " " .trR1 .trR2 > Trimmed.list
+
+          readarray trimmedFastqs < Trimmed.list
+
+          for i in "${trimmedFastqs[@]}"
+
+          do
+
+            iSUB=`echo $i | cut -d '_' -f5`
+
+            STAR \
+            --runThreadN 12 \
+            --genomeDir ${genomeDir[${DIR}]} \
+            --readFilesIn $i \
+            --readFilesCommand gunzip -c \
+            --outSAMstrandField intronMotif \
+            --outFilterIntronMotifs RemoveNoncanonical \
+            --outSAMtype BAM SortedByCoordinate \
+            --outReadsUnmapped Fastx \
+            --outFileNamePrefix ${iSUB}. \
+            --limitBAMsortRAM 61675612266 \
+            --quantMode GeneCounts
+
+          done
+
+					source activate RSC
+					multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
+					mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
+					mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
+					cd STAR.SPLIT.Unmapped
+						for i in *mate*
+							do
+								mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
+							done
+					cd ..							
+					mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
+					mv *.bam STAR.SPLIT.BAMS
+					mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
+					mkdir STAR.SPLIT
+					mv STAR.* *.html STAR.SPLIT
+					mv STAR.SPLIT ..
+					cd ..
+}
+
+
 geneBodyCov(){
 		cd STAR/STAR.BAMS
 		for i in *.bam
@@ -279,13 +374,13 @@ while getopts "hp:t:g:s:r:c:" opt; do
 
 	;;
 
-  c)
+  	c)
 
     GBCOV=$OPTARG
 
   ;;
 
-	\? )
+	\?)
 		echo
 		echo
 		echo
@@ -338,13 +433,22 @@ if [[ ! -z "${DIR+x}" ]]; then
 
 		if [[ ! -z "${RUN+x}" ]] && [[ $RUN == "PE" ]]; then
 				alignPE
+
+			elif [[ ! -z "${RUN+x}" ]] && [[ $RUN == "PES" ]]; then
+				pe_split
+			
 			elif [[ ! -z "${RUN+x}" ]] && [[ $RUN == "SE" ]]; then
 				align
+			
+			elif [[ ! -z "${RUN+x}" ]] && [[ $RUN == "SES" ]]; then
+      			se_split
+
 			else
 				echo "missing -r option "
 				usage
 				exit 1
 		fi
+
 
 	else
 		echo "The reference genome provided '"$DIR"' is not available"
@@ -415,22 +519,22 @@ if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 	exit 1
 
 else
-	echo >> beta4.run.log
-	echo `date` >> beta4.run.log
-	echo "Project Identifier Specified = " $PIN >> beta4.run.log
-	echo "Reference Genome Specified   = " $DIR >> beta4.run.log
-	echo "Trimming for smRNA seq       = " $T >> beta4.run.log
-	echo "SE or PE                     = " $RUN >> beta4.run.log
-	echo "Strandedness specified       = " $STRAND >> beta4.run.log
-  echo "GeneBody Coverage            = " $GBCOV >> beta4.run.log
-	echo >> beta4.run.log
+	echo >> beta5.run.log
+	echo `date` >> beta5.run.log
+	echo "Project Identifier Specified = " $PIN >> beta5.run.log
+	echo "Reference Genome Specified   = " $DIR >> beta5.run.log
+	echo "Trimming for smRNA seq       = " $T >> beta5.run.log
+	echo "SE or PE                     = " $RUN >> beta5.run.log
+	echo "Strandedness specified       = " $STRAND >> beta5.run.log
+    echo "GeneBody Coverage            = " $GBCOV >> beta5.run.log
+	echo >> beta5.run.log
 
-	echo "ENV INFO: " >> beta4.run.log
-	echo >> beta4.run.log
-	echo "STAR version:" `~/bin/STAR-2.7.0e/bin/Linux_x86_64/STAR --version` >> beta4.run.log
-	echo "multiqc version:" `~/miniconda2/envs/RSC/bin/multiqc --version` >> beta4.run.log
-	echo "samtools version:" `/programs/bin/samtools/samtools --version` >> beta4.run.log
-	echo "rseqc version: rseqc=2.6.4 " >> beta4.run.log
-	echo -------------------------------------------------------------------------------------------------- >> beta4.run.log
+	echo "ENV INFO: " >> beta5.run.log
+	echo >> beta5.run.log
+	echo "STAR version:" `~/bin/STAR-2.7.0e/bin/Linux_x86_64/STAR --version` >> beta5.run.log
+	echo "multiqc version:" `~/miniconda2/envs/RSC/bin/multiqc --version` >> beta5.run.log
+	echo "samtools version:" `/programs/bin/samtools/samtools --version` >> beta5.run.log
+	echo "rseqc version: rseqc=2.6.4 " >> beta5.run.log
+	echo -------------------------------------------------------------------------------------------------- >> beta5.run.log
 
 fi
