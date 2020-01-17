@@ -2,27 +2,26 @@
 
 #SBATCH -J RNAseq
 #SBATCH -o %x.out
-#SBATCH -e %x.err
 #SBATCH -n 12
 #SBATCH --mem-per-cpu=18000
 
 source ~/.bash_profile
 
 usage(){
-        echo "R N A - S E Q   W O R K F L O W - @bixBeta"
-        echo ""
-        echo ""
-        echo "Usage: bash" $0 "[-h arg] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] "
-        echo
+	echo "R N A - S E Q   W O R K F L O W - @bixBeta"
+	echo ""
+	echo ""
+	echo "Usage: bash" $0 "[-h arg] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] "
+	echo
 	echo "---------------------------------------------------------------------------------------------------------------------------"
-        echo "[-h] --> Display Help"
-        echo "[-p] --> Project Identifier Number"
-        echo "[-t] --> Small RNA Trimming <yes, no or paired>"
-        echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, rat, cat, chicken, horse, ATCC_13047, grape, ercc, ehv8 , erdman >"
-        echo "[-r] --> <SE> or <PE> "
-        echo "[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
-        echo "[-c] --> GeneBody Coverage < yes, no > "
-        echo "---------------------------------------------------------------------------------------------------------------------------"
+	echo "[-h] --> Display Help"
+	echo "[-p] --> Project Identifier Number"
+	echo "[-t] --> Small RNA Trimming <yes, no or paired>"
+	echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, rat, cat, chicken, horse, ATCC_13047, grape, ercc, ehv8 , erdman >"
+	echo "[-r] --> <SE> or <PE> "
+	echo "[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
+	echo "[-c] --> GeneBody Coverage < yes, no > "
+	echo "---------------------------------------------------------------------------------------------------------------------------"
 }
 
 
@@ -88,8 +87,13 @@ genomeDir=( ["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/hg38.star" \
 ["ATCC_13047"]="/workdir/genomes/Enterobacter_cloacae/ATCC_13047/custom/ATCC_13047.GTF" \
 ["grape"]="/workdir/genomes/Vitis_vinifera/GCA_000003745.2/ENSEMBL/Vitis_vinifera.12X.43.bed12" \
 ["rat"]="/workdir/genomes/Rattus_norvegicus/rn6/ENSEMBL/rat.star" \
-["ercc"]="/workdir/genomes/contaminants/ERCC_spikeIns/ercc.star" )
-
+["ercc"]="/workdir/genomes/contaminants/ERCC_spikeIns/ercc.star" \
+["lonchura"]="/workdir/genomes/Lonchura_striata/LonStrDom1/ENSEMBL/lonchura.star" \
+["goose"]="/workdir/genomes/Anser_brachyrhynchus/ASM259213v1/ENSEMBL/goose.star" \
+["ehv8"]="/workdir/genomes/FastQ_Screen_Genomes/EHV8/ehv8.star" \
+["erdman"]="/workdir/genomes/Mycobacterium_tuberculosis/Ensembl_GCA_000668235/GCA_000668235.star" \
+["TB"]="/workdir/genomes/Mycobacterium_tuberculosis/CDC1551_Ensembl/cdc1551.star" \
+["maize"]="/workdir/genomes/Zea_mays/B73_RefGen_v4/ENSEMBL/star.maize" )
 
 declare -A bed12
 
@@ -102,8 +106,10 @@ bed12=(	["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/genes.bed12" \
 ["horse"]="/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.EquCab3.0.96.bed12" \
 ["ATCC_13047"]="/workdir/genomes/Enterobacter_cloacae/ATCC_13047/GCF_000025565.1_ASM2556v1_genomic.bed12" \
 ["grape"]="/workdir/genomes/Vitis_vinifera/GCA_000003745.2/ENSEMBL/Vitis_vinifera.star" \
-["rat"]="/workdir/genomes/Rattus_norvegicus/rn6/ENSEMBL/Rattus_norvegicus.Rnor_6.0.bed12" )
-
+["rat"]="/workdir/genomes/Rattus_norvegicus/rn6/ENSEMBL/Rattus_norvegicus.Rnor_6.0.bed12" \
+["lonchura"]="/workdir/genomes/Lonchura_striata/LonStrDom1/ENSEMBL/Lonchura_striata_domestica.LonStrDom1.bed12" \
+["goose"]="/workdir/genomes/Anser_brachyrhynchus/ASM259213v1/ENSEMBL/Anser_brachyrhynchus.ASM259213v1.bed12" \
+["maize"]="/workdir/genomes/Zea_mays/B73_RefGen_v4/ENSEMBL/Zea_mays.B73_RefGen_v4.bed12" )
 
 
 
@@ -416,7 +422,7 @@ else
 	echo "Trimming for smRNA seq       = " $T >> beta4.run.log
 	echo "SE or PE                     = " $RUN >> beta4.run.log
 	echo "Strandedness specified       = " $STRAND >> beta4.run.log
-  	echo "GeneBody Coverage            = " $GBCOV >> beta4.run.log
+  echo "GeneBody Coverage            = " $GBCOV >> beta4.run.log
 	echo >> beta4.run.log
 
 	echo "ENV INFO: " >> beta4.run.log
