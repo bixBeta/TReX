@@ -12,6 +12,9 @@ if [ "$1" = "help" ] || [ "$1" = "--help" ] || [  -z $1  ]; then
 
 else
 
+# commit from gg02
+
+
 FASTQS=$1
 
 cut -d "," -f3 ${FASTQS}/input_samplesheet.csv | cut -d "-" -f2 | sed 1,2d > .ids
