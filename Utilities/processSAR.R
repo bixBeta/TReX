@@ -15,15 +15,21 @@ arg <-  commandArgs(trailingOnly = T)
 
 suppressPackageStartupMessages(library(dplyr))
 
-# check for required argument
+
 if (length(arg)==0) {
-  print(" Usage = Rscript test.R < path to *_vs_* txt files + '/'> ")  
-  stop("Both arguments must be supplied!!! \n", call.=FALSE)
+  print(" Usage = Rscript processSAR.R < PIN > ")  
+  stop("Please provide the PIN !!! \n", call.=FALSE)
   
 } 
 
-fileNames <- list.files( arg[1], pattern = ".complete")
-filePath <- paste0(arg[1], fileNames)
+dir = paste0(getwd(), "/")
+
+fileNames <- list.files( dir, pattern = ".complete")
+filePath <- paste0(dir, fileNames)
+
+
+
+
 
 # import SAR tool files as objects 
 
@@ -83,7 +89,7 @@ for (i in 2:length(obj2)){
   
 }
 
-write.table(new.data.frame, "final.txt", sep = "\t", quote = F, row.names = F)
+write.table(new.data.frame, paste0(arg[1],".final.txt"), sep = "\t", quote = F, row.names = F)
 
 
 for (i in 1:20) {
