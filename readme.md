@@ -1,7 +1,7 @@
 ### RNA-seq Differential Gene Expression Workflow 
 
 ```
-Usage: bash beta5.sh [-h] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] 
+Usage: bash beta6.sh [-h] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] 
 --------------------------------------------------------------------------------------
 [-h] --> Display Help
 [-p] --> Project Identifier Number
