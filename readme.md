@@ -1,10 +1,11 @@
 ### RNA-seq Differential Gene Expression Workflow 
 
 ```
-Usage: bash beta6.sh [-h] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] 
+Usage: bash beta6.sh [-h] [-p arg] [-d args] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] 
 --------------------------------------------------------------------------------------
 [-h] --> Display Help
 [-p] --> Project Identifier Number
+[-d] --> Comma Spearated Values for Delimiter and Field <delim,field or default> default: _,5 
 [-t] --> Small RNA Trimming <yes, no or paired>
 [-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, rat, cat, etc. >
 [-r] --> <SE> or <PE> 
