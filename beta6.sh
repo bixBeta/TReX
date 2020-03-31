@@ -11,22 +11,47 @@ usage(){
 	echo "R N A - S E Q   W O R K F L O W - @bixBeta"
 	echo ""
 	echo ""
-	echo "Usage: bash" $0 "[-h arg] [-p arg] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] "
+	echo "Usage: bash" $0 "[-h arg] [-p arg] [d args] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg]"
 	echo
 	echo "---------------------------------------------------------------------------------------------------------------------------"
 	echo "[-h] --> Display Help"
 	echo "[-p] --> Project Identifier Number"
-	echo "[-t] --> Small RNA Trimming <yes, no or paired>"
-	echo "[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, rat, cat, chicken, horse, ATCC_13047, grape, ercc, ehv8 , erdman >"
+ 	echo "[-d] --> Comma Spearated Values for Delimiter and Field <delim,field or default> default: _,5 "
+	echo "[-t] --> Fastq Trimming <nextSE, nextPE, 4colorSE, miSeqPE, novaPE >"
+	echo "[-g] --> Reference Genome <hg38, GRCh38, mm10, GRCm38, etc.>"
 	echo "[-r] --> <SE> <SES> <PE> or <PES> "
-	echo "[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
-	echo "[-c] --> GeneBody Coverage < yes, no > "
+	echo "[-s] --> Library Strandedness <0, 1, 2> where 1 = first strand, 2 = reverse strand, 0 for unstranded counts "
+	echo "[-c] --> GeneBody Coverage <yes, no> "
 	echo "---------------------------------------------------------------------------------------------------------------------------"
+  echo ""
+  echo "******************************************** "
+  echo "**********/ EXTENDED GENOME LIST /********** "
+  echo "[hg38]=/workdir/genomes/Homo_sapiens/hg38/UCSC/hg38.star "
+  echo "[mm10]=/workdir/genomes/Mus_musculus/mm10/UCSC/mm10.star "
+  echo "[GRCh38]=/workdir/genomes/Homo_sapiens/hg38/ENSEMBL/GRCh38.star "
+  echo "[GRCm38]=/workdir/genomes/Mus_musculus/mm10/ENSEMBL/GRCm38.star "
+  echo "[cat]=/workdir/genomes/Felis_catus/Felis_catus9.0/Ensembl/genomeDir "
+  echo "[chicken]=/workdir/genomes/Gallus_gallus/Galgal5/ENSEMBL/galgal5.star "
+  echo "[horse]=/workdir/genomes/Equus_caballus/ENSEMBL/Equus_caballus.star "
+  echo "[ATCC_13047]=/workdir/genomes/Enterobacter_cloacae/ATCC_13047/custom/ATCC_13047.GTF "
+  echo "[grape]=/workdir/genomes/Vitis_vinifera/GCA_000003745.2/ENSEMBL/Vitis_vinifera.12X.43.bed12 "
+  echo "[rat]=/workdir/genomes/Rattus_norvegicus/rn6/ENSEMBL/rat.star "
+  echo "[ercc]=/workdir/genomes/contaminants/ERCC_spikeIns/ercc.star "
+  echo "[lonchura]=/workdir/genomes/Lonchura_striata/LonStrDom1/ENSEMBL/lonchura.star "
+  echo "[goose]=/workdir/genomes/Anser_brachyrhynchus/ASM259213v1/ENSEMBL/goose.star "
+  echo "[ehv8]=/workdir/genomes/FastQ_Screen_Genomes/EHV8/ehv8.star "
+  echo "[erdman]=/workdir/genomes/Mycobacterium_tuberculosis/Ensembl_GCA_000668235/GCA_000668235.star "
+  echo "[TB]=/workdir/genomes/Mycobacterium_tuberculosis/CDC1551_Ensembl/cdc1551.star "
+  echo "[maize]=/workdir/genomes/Zea_mays/B73_RefGen_v4/ENSEMBL/star.maize "
+  echo "[finch]=/workdir/genomes/Taeniopygia_guttata/taeGut3.2.4/ENSEMBL/star.index "
+  echo "[dog]=/workdir/genomes/Canis_familiaris/canFam3/ENSEMBL/star.index "
+
+
 }
 
 
 
-trim(){
+trimSE(){
 
 		mkdir TrimQC_stats fastQC trimmed_fastqs
 		for i in fastqs/*.gz
@@ -38,18 +63,17 @@ trim(){
 
 }
 
-trimSmall(){
+trimHiSeq(){
 
 		mkdir TrimQC_stats fastQC trimmed_fastqs
 		for i in fastqs/*.gz
 		do
-			$TRIM --nextseq 20 --gzip --length 10  --fastqc --fastqc_args "-t 4 --outdir ./fastQC" $i
+			$TRIM --quality 20 --gzip --length 50  --fastqc --fastqc_args "-t 4 --outdir ./fastQC" $i
 		done
 		mv *_trimming_report.txt TrimQC_stats
 		mv *trimmed.fq.gz trimmed_fastqs
 
 }
-
 
 trimPE(){
 
@@ -74,6 +98,51 @@ trimPE(){
                 cd ..
 }
 
+trimMiSeqPE(){
+
+                cd fastqs
+								ls -1 *_R1_* > .R1
+                ls -1 *_R2_* > .R2
+                paste -d " " .R1 .R2 > Reads.list
+
+                readarray fastqs < Reads.list
+                mkdir fastQC
+
+                for i in "${fastqs[@]}"
+                do
+                        $TRIM --quality 20 --gzip --length 50  --paired --fastqc --fastqc_args "-t 4 --outdir ./fastQC" $i
+                done
+
+                mkdir TrimQC_stats trimmed_fastqs
+                mv *_trimming_report.txt TrimQC_stats
+                mv *_val* trimmed_fastqs
+                mv TrimQC_stats fastQC trimmed_fastqs ..
+
+                cd ..
+}
+
+trimHiSeqPE(){
+
+                cd fastqs
+		ls -1 *_1.fq* > .R1
+                ls -1 *_2.fq* > .R2
+                paste -d " " .R1 .R2 > Reads.list
+
+                readarray fastqs < Reads.list
+                mkdir fastQC
+
+                for i in "${fastqs[@]}"
+                do
+                        $TRIM --quality 20 --gzip --length 50  --paired --fastqc --fastqc_args "-t 4 --outdir ./fastQC" $i
+                done
+
+                mkdir TrimQC_stats trimmed_fastqs
+                mv *_trimming_report.txt TrimQC_stats
+                mv *_val* trimmed_fastqs
+                mv TrimQC_stats fastQC trimmed_fastqs ..
+
+                cd ..
+}
 
 declare -A genomeDir
 
@@ -93,7 +162,9 @@ genomeDir=( ["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/hg38.star" \
 ["ehv8"]="/workdir/genomes/FastQ_Screen_Genomes/EHV8/ehv8.star" \
 ["erdman"]="/workdir/genomes/Mycobacterium_tuberculosis/Ensembl_GCA_000668235/GCA_000668235.star" \
 ["TB"]="/workdir/genomes/Mycobacterium_tuberculosis/CDC1551_Ensembl/cdc1551.star" \
-["maize"]="/workdir/genomes/Zea_mays/B73_RefGen_v4/ENSEMBL/star.maize" )
+["maize"]="/workdir/genomes/Zea_mays/B73_RefGen_v4/ENSEMBL/star.maize" \
+["finch"]="/workdir/genomes/Taeniopygia_guttata/taeGut3.2.4/ENSEMBL/star.index" \
+["dog"]="/workdir/genomes/Canis_familiaris/canFam3/ENSEMBL/star.index" )
 
 declare -A bed12
 
@@ -109,7 +180,9 @@ bed12=(	["hg38"]="/workdir/genomes/Homo_sapiens/hg38/UCSC/genes.bed12" \
 ["rat"]="/workdir/genomes/Rattus_norvegicus/rn6/ENSEMBL/Rattus_norvegicus.Rnor_6.0.bed12" \
 ["lonchura"]="/workdir/genomes/Lonchura_striata/LonStrDom1/ENSEMBL/Lonchura_striata_domestica.LonStrDom1.bed12" \
 ["goose"]="/workdir/genomes/Anser_brachyrhynchus/ASM259213v1/ENSEMBL/Anser_brachyrhynchus.ASM259213v1.bed12" \
-["maize"]="/workdir/genomes/Zea_mays/B73_RefGen_v4/ENSEMBL/Zea_mays.B73_RefGen_v4.bed12" )
+["maize"]="/workdir/genomes/Zea_mays/B73_RefGen_v4/ENSEMBL/Zea_mays.B73_RefGen_v4.bed12" \
+["finch"]="/workdir/genomes/Taeniopygia_guttata/taeGut3.2.4/ENSEMBL/Taeniopygia_guttata.taeGut3.2.4.bed12" \
+["dog"]="/workdir/genomes/Canis_familiaris/canFam3/ENSEMBL/Canis_familiaris.CanFam3.1.bed12" )
 
 
 
@@ -122,23 +195,25 @@ align(){
 
 	    do
 
-	        iSUB=`echo $i | cut -d '_' -f5`
+				iSUB=`echo $i | cut -d ${DELIMITER} -f${FIELD}`
 
-	        STAR \
-	        --runThreadN 12 \
-	        --genomeDir ${genomeDir[${DIR}]} \
-	        --readFilesIn $i \
-	        --readFilesCommand gunzip -c \
-	        --outSAMstrandField intronMotif \
-	        --outFilterIntronMotifs RemoveNoncanonical \
-	        --outSAMtype BAM SortedByCoordinate \
-	        --outFileNamePrefix $iSUB. \
-	        --limitBAMsortRAM 61675612266 \
-	        --quantMode GeneCounts
+				STAR \
+				--runThreadN 12 \
+				--genomeDir ${genomeDir[${DIR}]} \
+				--readFilesIn $i \
+				--readFilesCommand gunzip -c \
+				--outSAMstrandField intronMotif \
+				--outFilterIntronMotifs RemoveNoncanonical \
+				--outSAMtype BAM SortedByCoordinate \
+				--outFileNamePrefix $iSUB. \
+				--limitBAMsortRAM 61675612266 \
+				--quantMode GeneCounts
 
-	    done
 
-	    source activate RSC
+			done
+
+
+	 #   source activate RSC
 	    multiqc -f -n ${PIN}.star.multiqc.report .
 	    mkdir STAR.COUNTS STAR.BAMS STAR.LOGS
 		mv *.ReadsPerGene.out.tab STAR.COUNTS
@@ -160,7 +235,7 @@ se_split(){
 
         do
 
-          iSUB=`echo $i | cut -d '_' -f5`
+          iSUB=`echo $i | cut -d ${DELIMITER} -f${FIELD}`
 
           STAR \
           --runThreadN 12 \
@@ -177,23 +252,23 @@ se_split(){
 
         done
 
-	source activate RSC
-	multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
-	mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
-	mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
-	cd STAR.SPLIT.Unmapped
-		for i in *mate*
-			do
-				mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
-			done
-	cd ..
-	mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
-	mv *.bam STAR.SPLIT.BAMS
-	mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
-	mkdir STAR.SPLIT
-	mv STAR.* *.html STAR.SPLIT
-	mv STAR.SPLIT ..
-	cd ..
+	#			source activate RSC
+				multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
+				mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
+				mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
+				cd STAR.SPLIT.Unmapped
+					for i in *mate*
+						do
+							mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
+						done
+				cd ..
+				mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
+				mv *.bam STAR.SPLIT.BAMS
+				mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
+				mkdir STAR.SPLIT
+				mv STAR.* *.html STAR.SPLIT
+				mv STAR.SPLIT ..
+				cd ..
 
 }
 
@@ -202,8 +277,8 @@ se_split(){
 alignPE(){
 
 	cd trimmed_fastqs
-	ls -1 *_R1_val_1.fq.gz > .trR1
-	ls -1 *_R2_val_2.fq.gz > .trR2
+	ls -1 *_1.fq.gz > .trR1
+	ls -1 *_2.fq.gz > .trR2
 	paste -d " " .trR1 .trR2 > Trimmed.list
 
 	readarray trimmedFastqs < Trimmed.list
@@ -212,7 +287,7 @@ alignPE(){
 
 	    do
 
-	        iSUB=`echo $i | cut -d '_' -f5`
+	        iSUB=`echo $i | cut -d ${DELIMITER} -f${FIELD}`
 
 	        STAR \
 	        --runThreadN 12 \
@@ -228,7 +303,7 @@ alignPE(){
 
 	    done
 
-	    source activate RSC
+	#    source activate RSC
 	    multiqc -f -n ${PIN}.star.multiqc.report .
 	    mkdir STAR.COUNTS STAR.BAMS STAR.LOGS
 		mv *.ReadsPerGene.out.tab STAR.COUNTS
@@ -264,8 +339,8 @@ alignPE(){
 pe_split(){
 
           cd trimmed_fastqs
-          ls -1 *_R1_val_1.fq.gz > .trR1
-          ls -1 *_R2_val_2.fq.gz > .trR2
+          ls -1 *_1.fq.gz > .trR1
+          ls -1 *_2.fq.gz > .trR2
           paste -d " " .trR1 .trR2 > Trimmed.list
 
           readarray trimmedFastqs < Trimmed.list
@@ -274,7 +349,7 @@ pe_split(){
 
           do
 
-            iSUB=`echo $i | cut -d '_' -f5`
+            iSUB=`echo $i | cut -d ${DELIMITER} -f${FIELD}`
 
             STAR \
             --runThreadN 12 \
@@ -291,23 +366,23 @@ pe_split(){
 
           done
 
-	source activate RSC
-	multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
-	mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
-	mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
-	cd STAR.SPLIT.Unmapped
-		for i in *mate*
-			do
-				mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
-			done
-	cd ..							
-	mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
-	mv *.bam STAR.SPLIT.BAMS
-	mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
-	mkdir STAR.SPLIT
-	mv STAR.* *.html STAR.SPLIT
-	mv STAR.SPLIT ..
-	cd ..
+	#				source activate RSC
+					multiqc -f -n ${PIN}.starSPLIT.multiqc.report .
+					mkdir STAR.SPLIT.COUNTS STAR.SPLIT.BAMS STAR.SPLIT.LOGS STAR.SPLIT.Unmapped
+					mv *Unmapped.out.mate* STAR.SPLIT.Unmapped
+					cd STAR.SPLIT.Unmapped
+						for i in *mate*
+							do
+								mv $i `echo $i | sed "s/Unmapped/not.$DIR/g"`
+							done
+					cd ..
+					mv *.ReadsPerGene.out.tab STAR.SPLIT.COUNTS
+					mv *.bam STAR.SPLIT.BAMS
+					mv *.out *.tab *_STARtmp *.list *.multiqc.report_data STAR.SPLIT.LOGS
+					mkdir STAR.SPLIT
+					mv STAR.* *.html STAR.SPLIT
+					mv STAR.SPLIT ..
+					cd ..
 }
 
 
@@ -330,7 +405,7 @@ geneBodyCov(){
 		cd ..
 }
 
-while getopts "hp:t:g:s:r:c:" opt; do
+while getopts "hp:t:g:s:r:c:d:" opt; do
 	case ${opt} in
 
 	h)
@@ -374,9 +449,14 @@ while getopts "hp:t:g:s:r:c:" opt; do
 
 	;;
 
-  	c)
+  c)
 
     GBCOV=$OPTARG
+
+  ;;
+
+  d)
+    DELIM=$OPTARG
 
   ;;
 
@@ -392,7 +472,6 @@ while getopts "hp:t:g:s:r:c:" opt; do
 
 done
 # shift $((OPTIND -1))
-
 #-------------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------------
 ## check if PIN is provided
@@ -405,19 +484,43 @@ fi
 
 #-------------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------------
+## check if delimiter parameter exists
+if [[ ! -z "${DELIM+x}" ]]; then
+	#statements
+	if [[ $DELIM == default ]]; then
+
+    DELIMITER="_"
+    FIELD="5"
+    echo "file naming will be done using the default delimiter settings"
+  else
+
+    DELIMITER=`echo $DELIM | cut -d , -f1`
+    FIELD=`echo $DELIM | cut -d , -f2-`
+    echo "file naming will be done using the delim = $DELIMITER and field = $FIELD settings"
+
+  fi
+
+fi
+
+#-------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
 ## check if trimming parameter exists
 
 if [[ ! -z "${T+x}" ]]; then
 	#statements
 
-	if [[ $T == yes ]]; then
-		trimSmall
-	elif [[ $T == paired ]]; then
+	if   [[ $T == nextSE ]]; then
+		trimSE
+	elif [[ $T == nextPE ]]; then
 		trimPE
-	elif [[ $T == no ]]; then
-		trim
+	elif [[ $T == 4colorSE ]]; then
+		trimHiSeq
+	elif [[ $T == miSeqPE ]]; then
+		trimMiSeqPE
+  elif [[ $T == novaPE ]]; then
+    trimHiSeqPE
 	else
-		echo "-t only accepts yes, no or paired as arguments"
+		echo "-t only accepts nextSE, nextPE, 4colorSE, miSeqPE, novaPE as arguments"
 		exit 1
 	fi
 fi
@@ -436,10 +539,10 @@ if [[ ! -z "${DIR+x}" ]]; then
 
 			elif [[ ! -z "${RUN+x}" ]] && [[ $RUN == "PES" ]]; then
 				pe_split
-			
+
 			elif [[ ! -z "${RUN+x}" ]] && [[ $RUN == "SE" ]]; then
 				align
-			
+
 			elif [[ ! -z "${RUN+x}" ]] && [[ $RUN == "SES" ]]; then
       			se_split
 
@@ -519,22 +622,22 @@ if [[ -z $1 ]] || [[  $1 = "help"  ]] ; then
 	exit 1
 
 else
-	echo >> beta5.run.log
-	echo `date` >> beta5.run.log
-	echo "Project Identifier Specified = " $PIN >> beta5.run.log
-	echo "Reference Genome Specified   = " $DIR >> beta5.run.log
-	echo "Trimming for smRNA seq       = " $T >> beta5.run.log
-	echo "SE or PE                     = " $RUN >> beta5.run.log
-	echo "Strandedness specified       = " $STRAND >> beta5.run.log
-    	echo "GeneBody Coverage            = " $GBCOV >> beta5.run.log
-	echo >> beta5.run.log
+	echo >> beta6.run.log
+	echo `date` >> beta6.run.log
+	echo "Project Identifier Specified = " $PIN >> beta6.run.log
+	echo "Reference Genome Specified   = " $DIR >> beta6.run.log
+	echo "Trimming for smRNA seq       = " $T >> beta6.run.log
+	echo "SE or PE                     = " $RUN >> beta6.run.log
+	echo "Strandedness specified       = " $STRAND >> beta6.run.log
+  	echo "GeneBody Coverage            = " $GBCOV >> beta6.run.log
+	echo >> beta6.run.log
 
-	echo "ENV INFO: " >> beta5.run.log
-	echo >> beta5.run.log
-	echo "STAR version:" `~/bin/STAR-2.7.0e/bin/Linux_x86_64/STAR --version` >> beta5.run.log
-	echo "multiqc version:" `~/miniconda2/envs/RSC/bin/multiqc --version` >> beta5.run.log
-	echo "samtools version:" `/programs/bin/samtools/samtools --version` >> beta5.run.log
-	echo "rseqc version: rseqc=2.6.4 " >> beta5.run.log
-	echo -------------------------------------------------------------------------------------------------- >> beta5.run.log
+	echo "ENV INFO: " >> beta6.run.log
+	echo >> beta6.run.log
+	echo "STAR version:" `~/bin/STAR-2.7.0e/bin/Linux_x86_64/STAR --version` >> beta6.run.log
+	echo "multiqc version:" `~/miniconda2/bin/multiqc --version` >> beta6.run.log
+	echo "samtools version:" `/programs/bin/samtools/samtools --version` >> beta6.run.log
+	echo "rseqc version: rseqc=2.6.4 " >> beta6.run.log
+	echo -------------------------------------------------------------------------------------------------- >> beta6.run.log
 
 fi
