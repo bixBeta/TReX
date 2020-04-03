@@ -28,11 +28,12 @@ Usage: bash smRNA.beta3.sh [-h arg] [-p arg] [-t arg] [-g arg]
 ### ATAC-seq Workflow
 
 ```
-Usage: bash 3.3.sh [-h arg] [-p arg] [-t arg] [-g arg]
+Usage: bash 3.4.sh [-h arg] [-p arg] [-d args] [-t arg] [-g arg]
 
 --------------------------------------------------------------------------------------
 [-h] --> Display Help
 [-p] --> Project Identifier Number
+[-d] --> Comma Spearated Values for Delimiter and Field <delim,field or default> default: _,5 
 [-t] --> Trimming <yes>; only use it if trimming is required
 [-g] --> Reference Genome <mm10 or hg38>
 [-q] --> Execute atacQC.R script <yes>
