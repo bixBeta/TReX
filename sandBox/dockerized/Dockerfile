@@ -21,7 +21,7 @@ RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubu
 
 # Install R packages that are required
 # TODO: add further package if you need!
-RUN R -e "install.packages(c('shiny', 'shinydashboard', 'dplyr', 'DT', 'tidyverse', 'plotly', 'ggplot2'), repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages(c('shiny', 'shinydashboard', 'dplyr', 'DT', 'tidyverse', 'plotly', 'ggplot2', 'tibble', 'shinyjs'), repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('BiocManager')"
 #RUN R -e "BiocManager::install(c('genefilter', 'geneplotter'))"
 
