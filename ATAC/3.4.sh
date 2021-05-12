@@ -47,7 +47,7 @@ gAlias=(
 )
 
 declare -A gSize # for macs2
-gAlias=(
+gSize=(
 ["mm10"]="mm" \
 ["hg38"]="hs"
 )
