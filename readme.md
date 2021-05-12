@@ -1,51 +1,57 @@
-### RNA-seq Differential Gene Expression Workflow 
 
+#### beta6.sh <- RNA-seq workflow
+Dependencies:
+  - `trim_galore`: version 0.6 or above (should be in path on [biohpc](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=663#c))
+  - `multiqc`: install multiqc using the following command:
+      `pip install --user multiqc`  
+  - `STAR`: version 2.7.0e or above (add to path `export PATH=/programs/STAR:$PATH`)
+  - `RSeQC`: version 2.61 (add to path using this guideline [biohpc](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=135#c))
+
+
+
+#### 3.4.sh <- ATAC-seq workflow
+Usage:
+
+`nohup bash 3.4.sh "[-h arg] [-p arg] [-d args] [-t arg] [-g arg] [-q arg]" > 3.4.log &` 
+
+Params Description:
+
+```bash
+"[-h] --> Display Help"
+"[-p] --> Project Identifier Number"
+"[-d] --> Comma Spearated Values for Delimiter and Field <delim,field or default> default: _,5 "
+"[-t] --> Trimming <nextseq or nova>;"
+"[-g] --> Reference Genome <mm10 or hg38>"
+"[-q] --> Execute atacQC.R script <yes>"
 ```
-Usage: bash beta6.sh [-h] [-p arg] [-d args] [-t arg] [-g arg] [-r arg] [-s arg] [-c arg] 
---------------------------------------------------------------------------------------
-[-h] --> Display Help
-[-p] --> Project Identifier Number
-[-d] --> Comma Spearated Values for Delimiter and Field <delim,field or default> default: _,5 
-[-t] --> Small RNA Trimming <yes, no or paired>
-[-g] --> Reference Genome < hg38, GRCh38, mm10, GRCm38, rat, cat, etc. >
-[-r] --> <SE> or <PE> 
-[-s] --> Library Strandedness < 0, 1, 2 > where 1 = first, 2 = reverse, 0 = Unstranded
-[-c] --> GeneBody Coverage < yes, no > 
---------------------------------------------------------------------------------------
+
+- Create a folder named fastqs and add all the PE fastq files to this folder
+- Run the [3.4.sh](http://3.4.sh) script from the same dir as the fastqs directory
+
+```bash
+.
+├── **3.4.sh**
+├── dedup-BAMS
+│   ├── PIN.FRIP.multiqc.report_data
+│   ├── atacQC.out
+│   ├── featureCounts
+│   ├── peaks.OUT
+│   └── tagDirs
+├── fastQC
+├── **fastqs**
+├── primary-BAMS
+├── trimmed_fastqs
+└── TrimQC_stats
 ```
-### smRNA-seq Workflow
 
-```
-Usage: bash smRNA.beta3.sh [-h arg] [-p arg] [-t arg] [-g arg]
+Tools needed:
 
---------------------------------------------------------------------------------------
-[-h] --> Display Help 
-[-p] --> Project Identifier Number 
-[-t] --> NextSeq run < yes, no, na > 
-[-g] --> Mapper Genome < hsa, mmu, cel > 
---------------------------------------------------------------------------------------
-```
-### ATAC-seq Workflow
-
-```
-Usage: bash 3.4.sh [-h arg] [-p arg] [-d args] [-t arg] [-g arg]
-
---------------------------------------------------------------------------------------
-[-h] --> Display Help
-[-p] --> Project Identifier Number
-[-d] --> Comma Spearated Values for Delimiter and Field <delim,field or default> default: _,5 
-[-t] --> Trimming <yes>; only use it if trimming is required
-[-g] --> Reference Genome <mm10 or hg38>
-[-q] --> Execute atacQC.R script <yes>
---------------------------------------------------------------------------------------
-``` 
-> QC ```Rscript atacQC.R < human, mouse  or 'path to gtf annotation' >```
-
-
-#### R script to generate mega DE-reults table
-
-processSAR.R  
-`Usage: Rscript processSAR.R <path/to/SAR/tables/>`
-
-geneSwitch.R <br>
-`For gff annotations use geneSwitch.R to replace the gene0, gene1, gene2 ... etc. naming schema with appropriate gene names`
+1. trim_galore
+2. fastqc
+3. bwa 
+4. samtools
+5. picard tools
+6. homer suite (w/ human and mouse genome config)
+7. macs2
+8. featureCounts (rsubread)
+9. multiqc
