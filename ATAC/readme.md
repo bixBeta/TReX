@@ -15,7 +15,7 @@ Params Description:
 ```
 
 - Create a folder named fastqs and add all the PE fastq files to this folder
-- Run the [3.4.sh](3.4.sh) script from the same dir as the fastqs directory
+- Run the [3.4.sh](https://raw.githubusercontent.com/bixBeta/TReX/master/ATAC/3.4.sh) script from the same dir as the fastqs directory
 
 ```bash
 .
