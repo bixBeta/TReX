@@ -4,7 +4,7 @@ pin <- args[1]
 ref <- args[2]
 
 if (length(args)<=1) {
-  print(" Usage = Rscript test.R <pin> <base-line>")  
+  print(" Usage = Rscript SAR_tools.R <pin> <base-line>")  
   stop("Both arguments must be supplied!!! \n", call.=FALSE)
   
 } 
