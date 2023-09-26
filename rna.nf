@@ -6,16 +6,18 @@ params.help = false
 params.listGenomes = false
 params.genome = "GRCh38"
 params.mode = "PE"
+params.id = "TREx_ID"
 
 if( params.help ) {
 
 log.info """
-R  N  A -  S  E  Q      W  O  R  K  F  L  O  W  -  @bixBeta
+R  N  A  -  S  E  Q      W  O  R  K  F  L  O  W  -  @bixBeta
 =========================================================================================================================
 Usage:
     nextflow run rna-seq.nf -c singularity.config
 Input:
     * --listGenomes: Get extended list of genomes available for this pipeline
+    * --id: TREx Project ID 
     * --genome: Genome index. Defult [${params.genome}]
     * --outdir: name of output directory. Default [${params.outdir}]
     * --runidx: Name of tool to run indexing. Valid values are "bwa" and "dragmap". Default [${params.runidx}]
@@ -29,6 +31,7 @@ Input:
 log.info """
 R  N  A -  S  E  Q      W  O  R  K  F  L  O  W  -  @bixBeta  
 =========================================================================================================================
+proj id      : ${params.id}
 reads        : ${params.reads}
 genome       : ${params.genome}
 mode         : ${params.mode}
@@ -140,7 +143,7 @@ if( params.listGenomes) {
     printMap = { a, b -> println "$a ----------- $b" }
     bed12.each(printMap)
 
-    println(genomeDir[params.genome])
+    // println(genomeDir[params.genome])
     exit 0
 }
 
@@ -155,6 +158,7 @@ workflow {
     if (params.mode == "PE" || params.mode == "PES") {
 
         STAR(FASTP.out)
+        //| MQC 
         
     }
 }
@@ -166,23 +170,23 @@ process FASTP {
         //publishDir params.outdir, mode: "move"
 
         input:
-        tuple val(pair_id), path(reads)
+            tuple val(pair_id), path(reads)
 
         output:
-        tuple val(pair_id), path(reads)
+            tuple val(pair_id), path("*_val_{1,2}.fq.gz")
 
         script:
         """
-        fastp \
-        -z 4 -w 16 \
-        --length_required 20 --qualified_quality_phred 20 \
-        --trim_poly_g \
-        -i ${reads[0]} \
-        -I ${reads[1]} \
-        -o ${pair_id}_val_1.fq.gz \
-        -O ${pair_id}_val_2.fq.gz \
-        -h ${pair_id}.fastp.html \
-        -j ${pair_id}.fastp.json
+            fastp \
+            -z 4 -w 16 \
+            --length_required 20 --qualified_quality_phred 20 \
+            --trim_poly_g \
+            -i ${reads[0]} \
+            -I ${reads[1]} \
+            -o ${pair_id}_val_1.fq.gz \
+            -O ${pair_id}_val_2.fq.gz \
+            -h ${pair_id}.fastp.html \
+            -j ${pair_id}.fastp.json
         
         """
 }
@@ -190,7 +194,7 @@ process FASTP {
 
 process STAR {
 
-    publishDir "$baseDir/STAR_OUT", mode: "move", overwrite: false
+    // publishDir "$baseDir/STAR_OUT", mode: "move", overwrite: false
     input:
         tuple val(pair_id), path(reads)
         // params.genome
@@ -220,5 +224,24 @@ process STAR {
 
     """
 
+
+}
+
+process MQC {
+
+    input:
+        path "*.bam"
+        path "*.out" 
+        path "*.tab"
+
+    output:
+        path "*html"
+
+    script:
+
+    """
+        multiqc -n ${params.id} work/
+
+    """
 
 }
