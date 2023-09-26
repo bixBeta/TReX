@@ -159,9 +159,9 @@ workflow {
         STARSE(FASTPSE.out)
             .set {star}
         MQC(star)
-    }
+    }     
 
-    if (params.mode == "PE" || params.mode == "PES" || params.mode == "PEBS")  {
+    else if (params.mode == "PE" || params.mode == "PES" || params.mode == "PEBS")  {
         FASTP(read_pairs_ch)
         STAR(FASTP.out)
             .set {star}
@@ -169,6 +169,11 @@ workflow {
        // MQC(channel.fromPath("$baseDir/STAR_OUT", checkIfExists: true)) 
         
     }
+
+    else {
+        error "Invalid Alignment mode ${params.mode}"
+    }
+
 }
 
 
@@ -364,8 +369,8 @@ process STAR {
         """
     else if (params.mode == "PEBS")
 
-         """
-            STAR \
+        """
+             STAR \
             --runThreadN 12 \
             --genomeDir ${genomeDir[params.genome]} \
             --readFilesIn ${reads[0]} ${reads[1]} \
@@ -376,13 +381,14 @@ process STAR {
             --outFileNamePrefix ${pair_id}. \
             --limitBAMsortRAM 61675612266 \
             --quantMode GeneCounts \
-            --outReadsUnmapped Fastx \ 
+            --outReadsUnmapped Fastx \
             --alignIntronMax 1 \
-            --alignMatesGapMax 45000 
+            --alignMatesGapMax 45000                   
 
         """   
     
-
+    else 
+        error "Invalid alignment mode: ${params.mode}"
 }
 
 
