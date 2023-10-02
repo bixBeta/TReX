@@ -18,6 +18,9 @@ Usage:
 Input:
     * --listGenomes: Get extended list of genomes available for this pipeline
     * --id: TREx Project ID 
+    * --sample-sheet: sample-sheet.csv
+        label   file
+        SS1     SS1_R1.fastq.gz etc
     * --genome: Genome index. Defult [${params.genome}]
     * --outdir: name of output directory. Default [${params.outdir}]
     * --runidx: Name of tool to run indexing. Valid values are "bwa" and "dragmap". Default [${params.runidx}]
@@ -147,7 +150,7 @@ if( params.listGenomes) {
     exit 0
 }
 
-
+include { FASTPSEM } from '/home/fa286/module1.nf'
 
 workflow {
 
@@ -155,10 +158,13 @@ workflow {
     read_ch = channel.fromPath(params.reads, checkIfExists: true)
     
     if (params.mode == "SE" || params.mode == "SES" || params.mode == "SEBS") {
-        FASTPSE(read_ch) 
-        STARSE(FASTPSE.out)
-            .set {star}
-        MQC(star)
+        
+        FASTPSEM(read_ch)
+        
+        // FASTPSE(read_ch) 
+        // STARSE(FASTPSE.out)
+        //     .set {star}
+        // MQC(star)
     }     
 
     else if (params.mode == "PE" || params.mode == "PES" || params.mode == "PEBS")  {
@@ -183,15 +189,19 @@ SINGLE END NOVOGENE PROCESSES
 
 process FASTPSE {
         // publishDir "$baseDir/trimmed_fastqs", mode: "copy"
+        label 'process_medium'
         input:
             path reads
-
+            // tuple val(meta), path(reads)
+        
         output:
             path "*gz"
             //path "*html"
-
+            
+        
         script:
         """
+            
             iSUB=`echo ${reads} | cut -d _ -f1,2`
             fastp \
             -z 4 -w 16 \
@@ -206,7 +216,9 @@ process FASTPSE {
 }
 
 process STARSE {
-
+    
+    label 'process_high'
+    
     publishDir "$baseDir/STAR_OUT", mode: "copy", overwrite: false
     
     input:
@@ -288,6 +300,8 @@ process STARSE {
 PAIRED END NOVOGENE PROCESSES
 ------------------------------------------------------------------------------------------------------------ */
 process FASTP {
+
+        label 'process_medium'
         tag "$pair_id"
 
         // publishDir params.outdir, mode: "copy"
@@ -317,6 +331,8 @@ process FASTP {
 
 
 process STAR {
+
+    label 'process_high'
 
     publishDir "$baseDir/STAR_OUT", mode: "copy", overwrite: false
     input:
