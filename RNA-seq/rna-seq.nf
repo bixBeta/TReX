@@ -1,5 +1,6 @@
 nextflow.enable.dsl=2
 
+params.sheet = "sample-sheet.csv"
 params.outdir = "$baseDir/STAR_OUT"
 params.reads = "$baseDir/fastqs/*_*{1,2}.f*.gz"
 params.help = false
@@ -8,6 +9,9 @@ params.genome = "GRCh38"
 params.mode = "PE"
 params.id = "TREx_ID"
 
+runmode = params.mode
+
+
 if( params.help ) {
 
 log.info """
@@ -15,16 +19,24 @@ R  N  A  -  S  E  Q      W  O  R  K  F  L  O  W  -  @bixBeta
 =========================================================================================================================
 Usage:
     nextflow run rna-seq.nf -c singularity.config
+
 Input:
     * --listGenomes: Get extended list of genomes available for this pipeline
     * --id: TREx Project ID 
-    * --sample-sheet: sample-sheet.csv
-        label   file
-        SS1     SS1_R1.fastq.gz etc
-    * --genome: Genome index. Defult [${params.genome}]
+    * --sheet: sample-sheet.csv
+        label   fastq1          fastq2
+        SS1     SS1_R1.fastq.gz SS1_R2.fastq.gz
+        SS2     SS2_R1.fastq.gz SS2_R2.fastq.gz  
+        .
+        .
+        . etc.
+
+    * --genome: Genome index. Default [${params.genome}]
     * --outdir: name of output directory. Default [${params.outdir}]
-    * --runidx: Name of tool to run indexing. Valid values are "bwa" and "dragmap". Default [${params.runidx}]
 """
+
+    // * --runidx: Name of tool to run indexing. Valid values are "bwa" and "dragmap". Default [${params.id}]
+
     exit 0
 }
 
@@ -150,262 +162,157 @@ if( params.listGenomes) {
     exit 0
 }
 
-include { FASTPSEM } from '/home/fa286/module1.nf'
+include {  FASTPSEM } from '/home/fa286/module1.nf'
+include {  STARM  } from '/home/fa286/star-module.nf'
+
+ch_sheet = channel.fromPath(params.sheet)
+
+
+if (genomeDir.containsKey(params.genome)){  // allows a user to pass a STAR index path via --genome parameter
+
+    genome = genomeDir[params.genome]
+
+} else {
+
+    genome = params.genome
+}
+
+genome_ch = channel.value(genome)
+
+workflow SINGLE {
+
+    meta_ch = ch_sheet
+                |  splitCsv( header:true )
+                |  map { row -> [row.label, [file("fastqs/" + row.fastq1)]] }
+                |  view
+
+
+    FASTPSEM(meta_ch)
+        .set { fastp_out }
+
+
+    STARM(fastp_out, genome_ch)
+
+
+    mqc_ch1 = STARM.out.read_per_gene_tab
+                .concat(STARM.out.log_final)
+                .collect()
+                .view()
+    
+
+    MQC(mqc_ch1)
+
+}
+
+
+
+workflow PAIRED {
+    meta_ch = ch_sheet
+                |  splitCsv( header:true )
+                |  map { row -> [row.label, [file("fastqs/" + row.fastq1), file("fastqs/" + row.fastq2)]] }
+                |  view
+
+
+    FASTPSEM(meta_ch)
+        .set { fastp_out }
+   
+
+    fastp_out.view()
+
+
+    STARM(fastp_out, genome_ch)
+
+
+    mqc_ch1 = STARM.out.read_per_gene_tab
+                .concat(STARM.out.log_final)
+                .collect()
+                .view()
+
+
+    MQC(mqc_ch1)
+
+
+}
+
 
 workflow {
 
-    read_pairs_ch = channel.fromFilePairs(params.reads, checkIfExists: true)
-    read_ch = channel.fromPath(params.reads, checkIfExists: true)
-    
-    if (params.mode == "SE" || params.mode == "SES" || params.mode == "SEBS") {
-        
-        FASTPSEM(read_ch)
-        
-        // FASTPSE(read_ch) 
-        // STARSE(FASTPSE.out)
-        //     .set {star}
-        // MQC(star)
-    }     
+    if ( params.mode == "SE" || params.mode == "SES" || params.mode == "SEBS" ){
 
-    else if (params.mode == "PE" || params.mode == "PES" || params.mode == "PEBS")  {
-        FASTP(read_pairs_ch)
-        STAR(FASTP.out)
-            .set {star}
-        MQC(star) 
-       // MQC(channel.fromPath("$baseDir/STAR_OUT", checkIfExists: true)) 
-        
+        SINGLE()
+    } 
+
+    // else if ( params.mode == "UNMS" ){
+
+    //     // SINGLE_SPLIT()
+    // }
+
+    else if ( params.mode == "PE" || params.mode == "PES" || params.mode == "PEBS" ){
+
+        PAIRED()
     }
+    
+    // else if ( params.mode == "UNMP" ){
+
+    //     // PAIRED_SPLIT()
+    // }
 
     else {
-        error "Invalid Alignment mode ${params.mode}"
+
+        error "Invalid alignment mode provided"
+        exit 0
+
     }
 
 }
+
+// workflow temp {
+
+//     read_pairs_ch = channel.fromFilePairs(params.reads, checkIfExists: true)
+//     read_ch = channel.fromPath(params.reads, checkIfExists: true)
+//     genome_ch = channel.value(genome)
+
+//     if (params.mode == "SE" || params.mode == "SES" || params.mode == "SEBS") {
+        
+//         FASTPSEM(read_ch)
+//         STARSEM(FASTPSEM.out.trimmed, genome_ch)
+//             .set {star}
+
+//         mqc_ch1 = STARSEM.out.read_per_gene_tab
+//                     .concat(STARSEM.out.log_final)
+//                     .collect()
+//                     .view()
+        
+//         MQC(mqc_ch_1)
+//     }     
+
+//     else if (params.mode == "PE" || params.mode == "PES" || params.mode == "PEBS")  {
+//         FASTP(read_pairs_ch)
+//         STAR(FASTP.out)
+//             .set {star}
+//         MQC(star) 
+//        // MQC(channel.fromPath("$baseDir/STAR_OUT", checkIfExists: true)) 
+        
+//     }
+
+//     else {
+//         error "Invalid Alignment mode ${params.mode}"
+//     }
+
+// }
 
 
 /* ---------------------------------------------------------------------------------------------------------
 SINGLE END NOVOGENE PROCESSES 
 ------------------------------------------------------------------------------------------------------------ */
 
-process FASTPSE {
-        // publishDir "$baseDir/trimmed_fastqs", mode: "copy"
-        label 'process_medium'
-        input:
-            path reads
-            // tuple val(meta), path(reads)
-        
-        output:
-            path "*gz"
-            //path "*html"
-            
-        
-        script:
-        """
-            
-            iSUB=`echo ${reads} | cut -d _ -f1,2`
-            fastp \
-            -z 4 -w 16 \
-            --length_required 50 --qualified_quality_phred 20 \
-            --trim_poly_g \
-            -i ${reads} \
-            -o \${iSUB}_val_1.fq.gz \
-            -h \${iSUB}.fastp.html \
-            -j \${iSUB}.fastp.json
-        
-        """
-}
-
-process STARSE {
-    
-    label 'process_high'
-    
-    publishDir "$baseDir/STAR_OUT", mode: "copy", overwrite: false
-    
-    input:
-        path reads
-        // params.genome
-
-    output:
-        path "*.bam"
-        path "*.out" 
-        path "*.tab"        
-        
-    script:
-
-    if (params.mode == "SE")
-        """
-            iSUB=`echo ${reads} | cut -d _ -f1,2`
-            STAR \
-            --runThreadN 12 \
-            --genomeDir ${genomeDir[params.genome]} \
-            --readFilesIn ${reads} \
-            --readFilesCommand gunzip -c \
-            --outSAMstrandField intronMotif \
-            --outFilterIntronMotifs RemoveNoncanonical \
-            --outSAMtype BAM SortedByCoordinate \
-            --outFileNamePrefix \${iSUB}. \
-            --limitBAMsortRAM 61675612266 \
-            --quantMode GeneCounts
-
-        """
-    else if (params.mode == "SES")
-
-        """
-            iSUB=`echo ${reads} | cut -d _ -f1,2`
-            STAR \
-            --runThreadN 12 \
-            --genomeDir ${genomeDir[params.genome]} \
-            --readFilesIn ${reads} \
-            --readFilesCommand gunzip -c \
-            --outSAMstrandField intronMotif \
-            --outFilterIntronMotifs RemoveNoncanonical \
-            --outSAMtype BAM SortedByCoordinate \
-            --outReadsUnmapped Fastx \
-            --outFileNamePrefix \${iSUB}. \
-            --limitBAMsortRAM 61675612266 \
-            --quantMode GeneCounts
-
-        """
-
-    else if (params.mode == "SEBS")
-
-        """
-            iSUB=`echo ${reads} | cut -d _ -f1,2`
-            STAR \
-            --runThreadN 12 \
-            --genomeDir ${genomeDir[params.genome]} \
-            --readFilesIn ${reads} \
-            --readFilesCommand gunzip -c \
-            --outSAMstrandField intronMotif \
-            --outFilterIntronMotifs RemoveNoncanonical \
-            --outSAMtype BAM SortedByCoordinate \
-            --outReadsUnmapped Fastx \
-            --outFileNamePrefix \${iSUB}. \
-            --limitBAMsortRAM 61675612266 \
-            --quantMode GeneCounts \
-            --alignIntronMax 1 \
-            --alignMatesGapMax 45000 
-
-        """
-
-
-    else 
-        error "Invalid alignment mode: ${params.mode}"
-
-
-}
 
 
 /* ---------------------------------------------------------------------------------------------------------
 PAIRED END NOVOGENE PROCESSES
 ------------------------------------------------------------------------------------------------------------ */
-process FASTP {
-
-        label 'process_medium'
-        tag "$pair_id"
-
-        // publishDir params.outdir, mode: "copy"
-
-        input:
-            tuple val(pair_id), path(reads)
-
-        output:
-            tuple val(pair_id), path("*_val_{1,2}.fq.gz")
-
-        script:
-        """
-            fastp \
-            -z 4 -w 16 \
-            --length_required 50 --qualified_quality_phred 20 \
-            --trim_poly_g \
-            -i ${reads[0]} \
-            -I ${reads[1]} \
-            -o ${pair_id}_val_1.fq.gz \
-            -O ${pair_id}_val_2.fq.gz \
-            -h ${pair_id}.fastp.html \
-            -j ${pair_id}.fastp.json
-        
-        """
-}
 
 
-
-process STAR {
-
-    label 'process_high'
-
-    publishDir "$baseDir/STAR_OUT", mode: "copy", overwrite: false
-    input:
-        tuple val(pair_id), path(reads)
-        // params.genome
-
-    output:
-        path "*.bam"
-        path "*.out" 
-        path "*.tab"
-
-    when:
-        
-        
-    script:
-
-    if (params.mode == "PE")
-       
-        """
-            STAR \
-            --runThreadN 12 \
-            --genomeDir ${genomeDir[params.genome]} \
-            --readFilesIn ${reads[0]} ${reads[1]} \
-            --readFilesCommand gunzip -c \
-            --outSAMstrandField intronMotif \
-            --outFilterIntronMotifs RemoveNoncanonical \
-            --outSAMtype BAM SortedByCoordinate \
-            --outFileNamePrefix ${pair_id}. \
-            --limitBAMsortRAM 61675612266 \
-            --quantMode GeneCounts
-
-        """
-
-    else if (params.mode == "PES")
-   
-        """
-            STAR \
-            --runThreadN 12 \
-            --genomeDir ${genomeDir[params.genome]} \
-            --readFilesIn ${reads[0]} ${reads[1]} \
-            --readFilesCommand gunzip -c \
-            --outSAMstrandField intronMotif \
-            --outFilterIntronMotifs RemoveNoncanonical \
-            --outSAMtype BAM SortedByCoordinate \
-            --outFileNamePrefix ${pair_id}. \
-            --limitBAMsortRAM 61675612266 \
-            --quantMode GeneCounts \
-            --outReadsUnmapped Fastx 
-
-        """
-    else if (params.mode == "PEBS")
-
-        """
-             STAR \
-            --runThreadN 12 \
-            --genomeDir ${genomeDir[params.genome]} \
-            --readFilesIn ${reads[0]} ${reads[1]} \
-            --readFilesCommand gunzip -c \
-            --outSAMstrandField intronMotif \
-            --outFilterIntronMotifs RemoveNoncanonical \
-            --outSAMtype BAM SortedByCoordinate \
-            --outFileNamePrefix ${pair_id}. \
-            --limitBAMsortRAM 61675612266 \
-            --quantMode GeneCounts \
-            --outReadsUnmapped Fastx \
-            --alignIntronMax 1 \
-            --alignMatesGapMax 45000                   
-
-        """   
-    
-    else 
-        error "Invalid alignment mode: ${params.mode}"
-}
 
 
 /* ---------------------------------------------------------------------------------------------------------
@@ -416,19 +323,18 @@ process MQC {
 
     publishDir "MQC_Reports", mode: "move", overwrite: true
     input:
-        path "*.bam"
-        path "*.out" 
-        path "*.tab"
+       // path "*.bam"                            
+        path "*"              
 
     output:
-        path "*html"
+        path "*html"                    , emit: mqc_out  
 
     when:
         
     script:
 
     """
-        multiqc -n ${params.id} ${params.outdir}
+        multiqc -n ${params.id} .
 
     """
 
