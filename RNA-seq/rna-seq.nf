@@ -162,7 +162,7 @@ if( params.listGenomes) {
     exit 0
 }
 
-include {  FASTPSEM } from '/home/fa286/module1.nf'
+include {  FASTPM } from '/home/fa286/module1.nf'
 include {  STARM  } from '/home/fa286/star-module.nf'
 
 ch_sheet = channel.fromPath(params.sheet)
@@ -179,6 +179,11 @@ if (genomeDir.containsKey(params.genome)){  // allows a user to pass a STAR inde
 
 genome_ch = channel.value(genome)
 
+
+/* ---------------------------------------------------------------------------------------------------------
+SINGLE END NOVOGENE Workflow 
+------------------------------------------------------------------------------------------------------------ */
+
 workflow SINGLE {
 
     meta_ch = ch_sheet
@@ -187,7 +192,7 @@ workflow SINGLE {
                 |  view
 
 
-    FASTPSEM(meta_ch)
+    FASTPM(meta_ch)
         .set { fastp_out }
 
 
@@ -205,6 +210,10 @@ workflow SINGLE {
 }
 
 
+/* ---------------------------------------------------------------------------------------------------------
+PAIRED END NOVOGENE Workflow
+------------------------------------------------------------------------------------------------------------ */
+
 
 workflow PAIRED {
     meta_ch = ch_sheet
@@ -213,7 +222,7 @@ workflow PAIRED {
                 |  view
 
 
-    FASTPSEM(meta_ch)
+    FASTPM(meta_ch)
         .set { fastp_out }
    
 
@@ -265,53 +274,6 @@ workflow {
     }
 
 }
-
-// workflow temp {
-
-//     read_pairs_ch = channel.fromFilePairs(params.reads, checkIfExists: true)
-//     read_ch = channel.fromPath(params.reads, checkIfExists: true)
-//     genome_ch = channel.value(genome)
-
-//     if (params.mode == "SE" || params.mode == "SES" || params.mode == "SEBS") {
-        
-//         FASTPSEM(read_ch)
-//         STARSEM(FASTPSEM.out.trimmed, genome_ch)
-//             .set {star}
-
-//         mqc_ch1 = STARSEM.out.read_per_gene_tab
-//                     .concat(STARSEM.out.log_final)
-//                     .collect()
-//                     .view()
-        
-//         MQC(mqc_ch_1)
-//     }     
-
-//     else if (params.mode == "PE" || params.mode == "PES" || params.mode == "PEBS")  {
-//         FASTP(read_pairs_ch)
-//         STAR(FASTP.out)
-//             .set {star}
-//         MQC(star) 
-//        // MQC(channel.fromPath("$baseDir/STAR_OUT", checkIfExists: true)) 
-        
-//     }
-
-//     else {
-//         error "Invalid Alignment mode ${params.mode}"
-//     }
-
-// }
-
-
-/* ---------------------------------------------------------------------------------------------------------
-SINGLE END NOVOGENE PROCESSES 
------------------------------------------------------------------------------------------------------------- */
-
-
-
-/* ---------------------------------------------------------------------------------------------------------
-PAIRED END NOVOGENE PROCESSES
------------------------------------------------------------------------------------------------------------- */
-
 
 
 
