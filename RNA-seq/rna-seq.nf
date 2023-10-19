@@ -2,15 +2,16 @@ nextflow.enable.dsl=2
 
 params.sheet = "sample-sheet.csv"
 params.outdir = "$baseDir/STAR_OUT"
-params.reads = "$baseDir/fastqs/*_*{1,2}.f*.gz"
+params.reads = "$baseDir/fastqs/"
 params.help = false
 params.listGenomes = false
 params.genome = "GRCh38"
 params.mode = "PE"
 params.id = "TREx_ID"
+params.gbcov = "10"
 
 runmode = params.mode
-
+pin = channel.value(params.id)
 
 if( params.help ) {
 
@@ -34,8 +35,6 @@ Input:
     * --genome: Genome index. Default [${params.genome}]
     * --outdir: name of output directory. Default [${params.outdir}]
 """
-
-    // * --runidx: Name of tool to run indexing. Valid values are "bwa" and "dragmap". Default [${params.id}]
 
     exit 0
 }
@@ -158,12 +157,13 @@ if( params.listGenomes) {
     printMap = { a, b -> println "$a ----------- $b" }
     bed12.each(printMap)
 
-    // println(genomeDir[params.genome])
     exit 0
 }
 
-include {  FASTPM } from '/home/fa286/module1.nf'
-include {  STARM  } from '/home/fa286/star-module.nf'
+include {  FASTPM   } from '/home/fa286/module1.nf'
+include {  STARM    } from '/home/fa286/star-module.nf'
+include {  GBCOV1M  } from '/home/fa286/gbcov.nf'
+include {  GBCOV2M  } from '/home/fa286/gbcov.nf'
 
 ch_sheet = channel.fromPath(params.sheet)
 
@@ -180,8 +180,19 @@ if (genomeDir.containsKey(params.genome)){  // allows a user to pass a STAR inde
 genome_ch = channel.value(genome)
 
 
+if (bed12.containsKey(params.genome)){  // allows a user to pass a STAR index path via --genome parameter
+
+    bed = bed12[params.genome]
+
+} else {
+
+    bed = null
+}
+
+bed_ch = channel.value(bed)
+
 /* ---------------------------------------------------------------------------------------------------------
-SINGLE END NOVOGENE Workflow 
+SINGLE END NOVA/NEXT-seq Workflow 
 ------------------------------------------------------------------------------------------------------------ */
 
 workflow SINGLE {
@@ -190,13 +201,29 @@ workflow SINGLE {
                 |  splitCsv( header:true )
                 |  map { row -> [row.label, [file("fastqs/" + row.fastq1)]] }
                 |  view
-
+    
 
     FASTPM(meta_ch)
         .set { fastp_out }
 
 
     STARM(fastp_out, genome_ch)
+
+    bam_ch = STARM.out.bam_sorted 
+                .collect()
+                .flatten()
+                .view()
+
+    chromo_sub = channel.value(params.gbcov)
+
+    GBCOV1M(bam_ch, chromo_sub)
+        .set { gbcov1 }
+
+    gbcov1_ch = GBCOV1M.out.sub_bam
+                    .collect(flat : false)                    
+                    .view()    
+
+    GBCOV2M(pin, bed_ch, gbcov1_ch)
 
 
     mqc_ch1 = STARM.out.read_per_gene_tab
@@ -211,7 +238,7 @@ workflow SINGLE {
 
 
 /* ---------------------------------------------------------------------------------------------------------
-PAIRED END NOVOGENE Workflow
+PAIRED END NOVA/NEXT-seq Workflow
 ------------------------------------------------------------------------------------------------------------ */
 
 
@@ -285,7 +312,7 @@ process MQC {
 
     publishDir "MQC_Reports", mode: "move", overwrite: true
     input:
-       // path "*.bam"                            
+
         path "*"              
 
     output:
