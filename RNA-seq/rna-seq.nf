@@ -1,14 +1,14 @@
 nextflow.enable.dsl=2
 
-params.sheet = "sample-sheet.csv"
-params.outdir = "$baseDir/STAR_OUT"
-params.reads = "$baseDir/fastqs/"
-params.help = false
-params.listGenomes = false
-params.genome = "GRCh38"
-params.mode = "PE"
-params.id = "TREx_ID"
-params.gbcov = "10"
+params.sheet            = "sample-sheet.csv"
+params.outdir           = "$baseDir/STAR_OUT"
+params.reads            = "$baseDir/fastqs/*_*{1,2}.f*.gz"
+params.help             = false
+params.listGenomes      = false
+params.genome           = "GRCh38"
+params.mode             = "PE"
+params.id               = "TREx_ID"
+params.gbcov            = "10"
 
 runmode = params.mode
 pin = channel.value(params.id)
@@ -210,9 +210,8 @@ workflow SINGLE {
     STARM(fastp_out, genome_ch)
 
     bam_ch = STARM.out.bam_sorted 
-                .collect()
-                .flatten()
-                .view()
+                | collect
+                | flatten
 
     chromo_sub = channel.value(params.gbcov)
 
@@ -220,8 +219,12 @@ workflow SINGLE {
         .set { gbcov1 }
 
     gbcov1_ch = GBCOV1M.out.sub_bam
+                    //.concat(gbcov1.sub_bam_index)
                     .collect(flat : false)                    
-                    .view()    
+                    // .map { it -> [it + it] }
+                    
+                    .view()                    
+    
 
     GBCOV2M(pin, bed_ch, gbcov1_ch)
 
@@ -258,6 +261,20 @@ workflow PAIRED {
 
     STARM(fastp_out, genome_ch)
 
+    bam_ch = STARM.out.bam_sorted 
+                | collect
+                | flatten
+
+    chromo_sub = channel.value(params.gbcov)
+
+    GBCOV1M(bam_ch, chromo_sub)
+        .set { gbcov1 }
+
+    gbcov1_ch = GBCOV1M.out.sub_bam
+                    .collect(flat : false)                    
+                    .view()                    
+    
+    GBCOV2M(pin, bed_ch, gbcov1_ch)
 
     mqc_ch1 = STARM.out.read_per_gene_tab
                 .concat(STARM.out.log_final)
