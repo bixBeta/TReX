@@ -5,10 +5,12 @@ params.outdir           = "$baseDir/STAR_OUT"
 params.reads            = "$baseDir/fastqs/*_*{1,2}.f*.gz"
 params.help             = false
 params.listGenomes      = false
-params.genome           = "GRCh38"
+params.star             = false
+params.genome           = ""
 params.mode             = "PE"
 params.id               = "TREx_ID"
-params.gbcov            = "10"
+params.gbcov            = false
+params.chromosub        = "10"
 
 runmode = params.mode
 pin = channel.value(params.id)
@@ -19,7 +21,7 @@ log.info """
 R  N  A  -  S  E  Q      W  O  R  K  F  L  O  W  -  @bixBeta
 =========================================================================================================================
 Usage:
-    nextflow run rna-seq.nf -c singularity.config
+    nextflow run rna-seq.nf -c singularity.config ... 
 
 Input:
     * --listGenomes: Get extended list of genomes available for this pipeline
@@ -213,21 +215,23 @@ workflow SINGLE {
                 | collect
                 | flatten
 
-    chromo_sub = channel.value(params.gbcov)
-
-    GBCOV1M(bam_ch, chromo_sub)
-        .set { gbcov1 }
-
-    gbcov1_ch = GBCOV1M.out.sub_bam
-                    //.concat(gbcov1.sub_bam_index)
-                    .collect(flat : false)                    
-                    // .map { it -> [it + it] }
-                    
-                    .view()                    
+    // chromo_sub = channel.value(params.gbcov)
+     chromo_sub = channel.value(params.chromosub)
     
+    if ( params.gbcov ) {
+        GBCOV1M(bam_ch, chromo_sub)
+            .set { gbcov1 }
 
-    GBCOV2M(pin, bed_ch, gbcov1_ch)
+        gbcov1_ch = GBCOV1M.out.sub_bam
+                        //.concat(gbcov1.sub_bam_index)
+                        .collect(flat : false)                    
+                        // .map { it -> [it + it] }
+                        
+                        .view()                    
+        
 
+        GBCOV2M(pin, bed_ch, gbcov1_ch)
+    }
 
     mqc_ch1 = STARM.out.read_per_gene_tab
                 .concat(STARM.out.log_final)
@@ -258,24 +262,29 @@ workflow PAIRED {
 
     fastp_out.view()
 
-
-    STARM(fastp_out, genome_ch)
-
+    if( params.star ){
+        STARM(fastp_out, genome_ch)
+    
     bam_ch = STARM.out.bam_sorted 
                 | collect
                 | flatten
 
-    chromo_sub = channel.value(params.gbcov)
+    // chromo_sub = channel.value(params.gbcov)
+       chromo_sub = channel.value(params.chromosub)
+    }
 
-    GBCOV1M(bam_ch, chromo_sub)
-        .set { gbcov1 }
+    if ( params.gbcov ) {
+        GBCOV1M(bam_ch, chromo_sub)
+            .set { gbcov1 }
 
-    gbcov1_ch = GBCOV1M.out.sub_bam
-                    .collect(flat : false)                    
-                    .view()                    
-    
-    GBCOV2M(pin, bed_ch, gbcov1_ch)
+        gbcov1_ch = GBCOV1M.out.sub_bam
+                        .collect(flat : false)                    
+                        .view()                    
+        
+        GBCOV2M(pin, bed_ch, gbcov1_ch)
+    }
 
+    if( params.star ){
     mqc_ch1 = STARM.out.read_per_gene_tab
                 .concat(STARM.out.log_final)
                 .collect()
@@ -283,7 +292,7 @@ workflow PAIRED {
 
 
     MQC(mqc_ch1)
-
+    }
 
 }
 
@@ -327,7 +336,7 @@ GLOBAL PROCESSES
 
 process MQC {
 
-    publishDir "MQC_Reports", mode: "move", overwrite: true
+    publishDir "Reports", mode: "move", overwrite: true
     input:
 
         path "*"              
@@ -340,7 +349,7 @@ process MQC {
     script:
 
     """
-        multiqc -n ${params.id} .
+       multiqc -n ${params.id}.star.multiqc.report -m star .
 
     """
 
